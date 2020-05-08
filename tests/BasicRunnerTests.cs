@@ -19,13 +19,14 @@ namespace tests
         [Fact]
         public async Task Test1()
         {
-            var harness = new GameTestHarness();
+            var harness = new GameTestHarness()
+                .WithTestGrid(31, 13, mapString)
+                .RunAsync(out FakeInputOutput inputOutput);
 
-            await harness.RunAsync();
-
-            while (harness.InputOutput.CanReadOutput)
+            await harness;
+            while (inputOutput.CanReadOutput)
             {
-                var output = harness.InputOutput.ReadOutput();
+                var output = inputOutput.ReadOutput();
                 _testOutput.WriteLine(output);
             }
         }
