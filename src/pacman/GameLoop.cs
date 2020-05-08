@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 
 namespace pacman
@@ -7,6 +8,7 @@ namespace pacman
     {
         private readonly IInputOutput _inputOutput;
         private readonly CancellationToken? _cancellation;
+        private readonly Dictionary<int, Pac> _pacs = new Dictionary<int, Pac>();
 
         public GameLoop(IInputOutput inputOutput, CancellationToken? cancellation)
         {
@@ -40,8 +42,14 @@ namespace pacman
                         string typeId = inputs[4]; // unused in wood leagues
                         int speedTurnsLeft = int.Parse(inputs[5]); // unused in wood leagues
                         int abilityCooldown = int.Parse(inputs[6]); // unused in wood leagues
-                        pacs[i] = new Pac(pacId, mine, new Location(x, y));
+                        var location = new Location(x, y);
 
+                        if (!_pacs.ContainsKey(pacId))
+                        {
+                            _pacs.Add(pacId, new Pac(pacId, mine));
+                        }
+
+                        _pacs[pacId].AddLocation(location);
                     }
 
                     int visiblePelletCount = int.Parse(_inputOutput.ReadLine()); // all pellets in sight
