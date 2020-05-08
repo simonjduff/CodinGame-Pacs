@@ -1,18 +1,18 @@
-﻿using System.Security.Cryptography.X509Certificates;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using pacman;
 using Xunit;
 
 namespace tests
 {
-    public class HungryMovementStrategyTests : PacTestBase
+    public class HungryMovementStrategyTests
     {
         [Fact]
         public async Task PacGoesToMostFood()
         {
+            var harness = new GameTestHarness();
             // Given a grid
-            InputOutput.AddInput("31 13");
-            TestGrid grid = new TestGrid(31, 13, mapString, InputOutput);
+            harness.InputOutput.AddInput("31 13");
+            TestGrid grid = new TestGrid(31, 13, mapString, harness.InputOutput);
             grid.WriteGrid();
 
             // And a pac location
@@ -24,9 +24,9 @@ namespace tests
 
             // And Pellets
             grid.WritePellets();
-            await Awaiter;
-            Assert.True(InputOutput.CanReadOutput);
-            var output = InputOutput.ReadOutput();
+            await harness.RunAsync();
+            Assert.True(harness.InputOutput.CanReadOutput);
+            var output = harness.InputOutput.ReadOutput();
             Assert.Equal("MOVE 0 9 2", output);
         }
 
