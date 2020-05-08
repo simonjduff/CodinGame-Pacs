@@ -237,17 +237,10 @@ namespace tests
             await runner;
             inputOutput.CompleteOutput();
 
-            while (true)
+            while (!inputOutput.CanReadOutput)
             {
-                try
-                {
-                    var output = inputOutput.ReadOutput();
-                    _testOutput.WriteLine(output);
-                }
-                catch (InvalidOperationException)
-                {
-                    break;
-                }
+                var output = inputOutput.ReadOutput();
+                _testOutput.WriteLine(output);
             }
         }
     }

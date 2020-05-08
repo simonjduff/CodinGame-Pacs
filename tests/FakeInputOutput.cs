@@ -23,6 +23,7 @@ namespace tests
 
         public string ReadOutput() => _output.Take();
         public void CompleteOutput() => _output.CompleteAdding();
+        public bool CanReadOutput => !_output.IsCompleted;
 
         public string ReadLine() => _input.Take(_cancellation);
 
