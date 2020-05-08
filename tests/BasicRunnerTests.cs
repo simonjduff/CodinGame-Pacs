@@ -4,7 +4,7 @@ using Xunit;
 
 namespace tests
 {
-    public class UnitTest1
+    public class BasicRunnerTests
     {
         [Fact]
         public void Test1()
