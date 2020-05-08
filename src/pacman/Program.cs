@@ -1,4 +1,6 @@
-﻿namespace pacman
+﻿using System.Threading;
+
+namespace pacman
 {
     using System;
     public class Player
@@ -18,7 +20,7 @@
             player.Run();
         }
 
-        public void Run()
+        public void Run(CancellationToken? cancellation = null)
         {
             string[] inputs;
             var gridSizeInput = _consoleInputOutput.ReadLine();
@@ -32,7 +34,7 @@
             }
 
             // game loop
-            var loop = new GameLoop(_consoleInputOutput);
+            var loop = new GameLoop(_consoleInputOutput, cancellation);
             loop.Run();
         }
     }

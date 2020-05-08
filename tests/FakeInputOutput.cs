@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Concurrent;
+using System.Threading;
 using pacman;
 
 namespace tests
@@ -8,6 +9,12 @@ namespace tests
     {
         private readonly BlockingCollection<string> _input = new BlockingCollection<string>();
         private readonly BlockingCollection<string> _output = new BlockingCollection<string>();
+        private readonly CancellationToken _cancellation;
+
+        public FakeInputOutput(CancellationToken cancellation)
+        {
+            _cancellation = cancellation;
+        }
 
         public void AddInput(string input)
         {
@@ -15,8 +22,9 @@ namespace tests
         }
 
         public string ReadOutput() => _output.Take();
+        public void CompleteOutput() => _output.CompleteAdding();
 
-        public string ReadLine() => _input.Take();
+        public string ReadLine() => _input.Take(_cancellation);
 
         public void WriteLine(string text)
         {
