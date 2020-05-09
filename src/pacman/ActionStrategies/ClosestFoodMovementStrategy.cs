@@ -1,24 +1,24 @@
-﻿namespace pacman
+﻿namespace pacman.ActionStrategies
 {
     using System;
-    using System.Threading;
     using System.Collections.Generic;
-
+    using System.Threading;
+    [Obsolete("This isn't useful when food is invisible")]
     public class ClosestFoodMovementStrategy : IActionStrategy
     {
         private const int MaxRadius = 10;
-        private readonly Dictionary<int, NextAction> _nextMove = new Dictionary<int, NextAction>();
+        private readonly Dictionary<PacKey, NextAction> _nextMove = new Dictionary<PacKey, NextAction>();
 
         public NextAction Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation)
         {
-            if (_nextMove.ContainsKey(pac.Id) && gameGrid.FoodValue(_nextMove[pac.Id].Location) > 0)
+            if (_nextMove.ContainsKey(pac.Key) && gameGrid.FoodValue(_nextMove[pac.Key].Location) > 0)
             {
-                return _nextMove[pac.Id];
+                return _nextMove[pac.Key];
             }
 
-            if (_nextMove.ContainsKey(pac.Id) && gameGrid.FoodValue(_nextMove[pac.Id].Location) == 0)
+            if (_nextMove.ContainsKey(pac.Key) && gameGrid.FoodValue(_nextMove[pac.Key].Location) == 0)
             {
-                _nextMove.Remove(pac.Id);
+                _nextMove.Remove(pac.Key);
             }
 
             short searchRadius = 1;
@@ -57,9 +57,9 @@
                 if (gameGrid.FoodValue(location) > 0)
                 {
                     Console.Error.WriteLine($"Radius {searchRadius} From {pac.Location} food {location} Mine {pac.Mine}");
-                    _nextMove[pac.Id] = new NextAction(pac, location);
+                    _nextMove[pac.Key] = new NextAction(pac, location);
 
-                    return _nextMove[pac.Id];
+                    return _nextMove[pac.Key];
                 }
             }
 

@@ -86,7 +86,7 @@
             }
 
             public GridCell(bool traversable,
-                Pac? pac
+                Pac pac
             )
             {
                 Traversable = traversable;
@@ -94,8 +94,7 @@
             }
 
             public bool Traversable { get; }
-            public Pac? Pac { get; }
-            public bool HasPac => Pac.HasValue;
+            public Pac Pac { get; }
         }
 
         /// <summary>

@@ -1,5 +1,6 @@
 ﻿using System.Threading.Tasks;
 using pacman;
+using pacman.ActionStrategies;
 using Xunit;
 
 namespace tests.MovementStrategyTests

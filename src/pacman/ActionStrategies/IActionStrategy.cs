@@ -1,4 +1,4 @@
-﻿namespace pacman
+﻿namespace pacman.ActionStrategies
 {
     using System.Threading;
     public interface IActionStrategy

@@ -4,11 +4,12 @@
     using System;
     using System.Collections.Generic;
     using System.Threading;
+    using pacman.ActionStrategies;
     public class GameLoop
     {
         private readonly IInputOutput _inputOutput;
         private readonly CancellationToken _cancellation;
-        private readonly Dictionary<int, Pac> _myPacs = new Dictionary<int, Pac>();
+        private readonly Dictionary<PacKey, Pac> _pacs = new Dictionary<PacKey, Pac>();
         private readonly IActionStrategy _actionStrategy;
         private readonly GameGrid _gameGrid;
 
@@ -47,21 +48,24 @@
                         short x = short.Parse(inputs[2]); // position in the grid
                         short y = short.Parse(inputs[3]); // position in the grid
                         string typeId = inputs[4]; // unused in wood leagues
-                        int speedTurnsLeft = int.Parse(inputs[5]); // unused in wood leagues
-                        int abilityCooldown = int.Parse(inputs[6]); // unused in wood leagues
+                        short speedTurnsLeft = short.Parse(inputs[5]); // unused in wood leagues
+                        short abilityCooldown = short.Parse(inputs[6]); // unused in wood leagues
                         var location = new Location(x, y);
 
-                        if (!mine)
+                        Pac pac;
+
+                        var key = new PacKey(pacId, mine);
+                        if (!_pacs.ContainsKey(key))
                         {
-                            continue;
+
+                            _pacs.Add(key, new Pac(pacId, mine, typeId));
                         }
 
-                        if (!_myPacs.ContainsKey(pacId))
-                        {
-                            _myPacs.Add(pacId, new Pac(pacId, mine));
-                        }
+                        pac = _pacs[key];
 
-                        _myPacs[pacId].AddLocation(location);
+                        pac.AddLocation(location);
+                        pac.AbilityCooldown = abilityCooldown;
+                        pac.SpeedTurnsLeft = speedTurnsLeft;
                     }
 
                     int visiblePelletCount = int.Parse(_inputOutput.ReadLine()); // all pellets in sight
@@ -72,7 +76,9 @@
 
                     //_inputOutput.WriteLine("MOVE 0 15 10"); // MOVE <pacId> <x> <y>
 
-                    var moves = string.Join("|", _myPacs.Values.Select(pac => _actionStrategy.Next(_gameGrid, pac,
+                    var myPacs = _pacs.Values.Where(p => p.Mine);
+
+                    var moves = string.Join("|", myPacs.Select(pac => _actionStrategy.Next(_gameGrid, pac,
                         _cancellation)));
                     _inputOutput.WriteLine(moves);
                 }

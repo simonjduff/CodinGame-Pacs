@@ -2,6 +2,7 @@
 {
     using System.Collections.Generic;
     using System.Threading;
+    using pacman.ActionStrategies;
     public class Player
     {
         private readonly IInputOutput _consoleInputOutput;

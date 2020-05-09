@@ -1,5 +1,6 @@
 ﻿using System.Threading;
 using pacman;
+using pacman.ActionStrategies;
 
 namespace tests.MovementStrategyTests
 {

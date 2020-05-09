@@ -1,5 +1,7 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using pacman;
+using pacman.ActionStrategies;
 using Xunit;
 
 namespace tests.MovementStrategyTests
@@ -17,7 +19,9 @@ namespace tests.MovementStrategyTests
 
             Task awaiter = new GameTestHarness()
                 .WithTestGrid(31, 13, mapString)
+#pragma warning disable 618
                 .WithMovementStrategy(new ClosestFoodMovementStrategy())
+#pragma warning restore 618
                 //.WithCancellationToken(new CancellationTokenSource(3000).Token)
                 .WithPac(enemy)
                 .WithPac(pac)
