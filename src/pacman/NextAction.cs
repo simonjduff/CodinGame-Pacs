@@ -1,8 +1,8 @@
 ﻿namespace pacman
 {
-    public struct NextMove
+    public struct NextAction
     {
-        public NextMove(Pac pac, Location location)
+        public NextAction(Pac pac, Location location)
         {
             Pac = pac;
             Location = location;
@@ -13,5 +13,5 @@
         public int Y => Location.Y;
         public int PacId => Pac.Id;
         public override string ToString() => $"MOVE {PacId} {X} {Y}";
-        }
+    }
 }

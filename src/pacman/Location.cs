@@ -2,13 +2,13 @@
 {
     public struct Location
     {
-        public Location(int x, int y)
+        public Location(short x, short y)
         {
             X = x;
             Y = y;
         }
-        public int X { get; }
-        public int Y { get; }
+        public short X { get; }
+        public short Y { get; }
 
         public override int GetHashCode()
         {
@@ -18,5 +18,16 @@
         }
 
         public override string ToString() => $"{X} {Y}";
+
+        public override bool Equals(object obj)
+        {
+            if (ReferenceEquals(obj, null))
+            {
+                return false;
+            }
+
+            Location loc = (Location) obj;
+            return loc.X == X && loc.Y == Y;
+        }
     }
 }

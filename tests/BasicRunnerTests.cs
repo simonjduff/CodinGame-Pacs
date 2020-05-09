@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using pacman;
+using tests.MovementStrategyTests;
 using Xunit;
 using Xunit.Abstractions;
 

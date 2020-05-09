@@ -3,23 +3,22 @@
     using System.Linq;
     using System;
     using System.Collections.Generic;
-    using System.Diagnostics;
     using System.Threading;
     public class GameLoop
     {
         private readonly IInputOutput _inputOutput;
         private readonly CancellationToken _cancellation;
         private readonly Dictionary<int, Pac> _myPacs = new Dictionary<int, Pac>();
-        private readonly IMovementStrategy _movementStrategy;
+        private readonly IActionStrategy _actionStrategy;
         private readonly GameGrid _gameGrid;
 
         public GameLoop(IInputOutput inputOutput, 
             CancellationToken cancellation,
-            IMovementStrategy movementStrategy,
+            IActionStrategy actionStrategy,
             GameGrid gameGrid)
         {
             _gameGrid = gameGrid ?? throw new ArgumentNullException(nameof(gameGrid));
-            _movementStrategy = movementStrategy ?? throw new ArgumentNullException(nameof(movementStrategy));
+            _actionStrategy = actionStrategy ?? throw new ArgumentNullException(nameof(actionStrategy));
             _cancellation = cancellation;
             _inputOutput = inputOutput ?? throw new ArgumentNullException(nameof(_inputOutput));
         }
@@ -45,8 +44,8 @@
                         inputs = _inputOutput.ReadLine().Split(' ');
                         int pacId = int.Parse(inputs[0]); // pac number (unique within a team)
                         bool mine = inputs[1] != "0"; // true if this pac is yours
-                        int x = int.Parse(inputs[2]); // position in the grid
-                        int y = int.Parse(inputs[3]); // position in the grid
+                        short x = short.Parse(inputs[2]); // position in the grid
+                        short y = short.Parse(inputs[3]); // position in the grid
                         string typeId = inputs[4]; // unused in wood leagues
                         int speedTurnsLeft = int.Parse(inputs[5]); // unused in wood leagues
                         int abilityCooldown = int.Parse(inputs[6]); // unused in wood leagues
@@ -73,7 +72,7 @@
 
                     //_inputOutput.WriteLine("MOVE 0 15 10"); // MOVE <pacId> <x> <y>
 
-                    var moves = string.Join("|", _myPacs.Values.Select(pac => _movementStrategy.Next(_gameGrid, pac,
+                    var moves = string.Join("|", _myPacs.Values.Select(pac => _actionStrategy.Next(_gameGrid, pac,
                         _cancellation)));
                     _inputOutput.WriteLine(moves);
                 }
@@ -90,8 +89,8 @@
             for (int i = 0; i < pelletCount; i++)
             {
                 var inputs = _inputOutput.ReadLine().Split(' ');
-                int x = int.Parse(inputs[0]);
-                int y = int.Parse(inputs[1]);
+                short x = short.Parse(inputs[0]);
+                short y = short.Parse(inputs[1]);
                 short value = short.Parse(inputs[2]); // amount of points this pellet is worth
                 yield return new Pellet(new Location(x, y), value);
             }

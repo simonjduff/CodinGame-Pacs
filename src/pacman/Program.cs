@@ -5,12 +5,12 @@
     public class Player
     {
         private readonly IInputOutput _consoleInputOutput;
-        private readonly IMovementStrategy _movementStrategy;
+        private readonly IActionStrategy _actionStrategy;
 
         public Player(IInputOutput consoleInputOutput,
-            IMovementStrategy movementStrategy)
+            IActionStrategy actionStrategy)
         {
-            _movementStrategy = movementStrategy;
+            _actionStrategy = actionStrategy;
             _consoleInputOutput = consoleInputOutput;
         }
 
@@ -18,7 +18,8 @@
         {
             //var inputOutput = new LoggingConsoleInputOutput();
             var inputOutput = new ConsoleInputOutput();
-            Player player = new Player(inputOutput, new ClosestFoodMovementStrategy());
+            //Player player = new Player(inputOutput, new ClosestFoodMovementStrategy());
+            Player player = new Player(inputOutput, new LineOfSightMovementStrategy());
             var cancellation = new CancellationTokenSource();
             player.Run(cancellation.Token);
         }
@@ -38,7 +39,7 @@
             // game loop
             var loop = new GameLoop(_consoleInputOutput, 
                 cancellation, 
-                _movementStrategy,
+                _actionStrategy,
                 grid);
             loop.Run();
         }

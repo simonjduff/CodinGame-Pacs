@@ -4,12 +4,12 @@
     using System.Threading;
     using System.Collections.Generic;
 
-    public class ClosestFoodMovementStrategy : IMovementStrategy
+    public class ClosestFoodMovementStrategy : IActionStrategy
     {
         private const int MaxRadius = 10;
-        private readonly Dictionary<int, NextMove> _nextMove = new Dictionary<int, NextMove>();
+        private readonly Dictionary<int, NextAction> _nextMove = new Dictionary<int, NextAction>();
 
-        public NextMove Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation)
+        public NextAction Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation)
         {
             if (_nextMove.ContainsKey(pac.Id) && gameGrid.FoodValue(_nextMove[pac.Id].Location) > 0)
             {
@@ -21,11 +21,11 @@
                 _nextMove.Remove(pac.Id);
             }
 
-            int searchRadius = 1;
-            var pacX = pac.Location.X;
-            int searchX = pacX - searchRadius;
-            var pacY = pac.Location.Y;
-            int searchY = pacY - searchRadius;
+            short searchRadius = 1;
+            short pacX = pac.Location.X;
+            short searchX = (short)(pacX - searchRadius);
+            short pacY = pac.Location.Y;
+            short searchY = (short)(pacY - searchRadius);
 
             while (searchRadius != MaxRadius + 1
                    || !cancellation.IsCancellationRequested)
@@ -36,12 +36,12 @@
                     && searchY == pacY + searchRadius)
                 {
                     searchRadius++;
-                    searchX = pacX - searchRadius;
-                    searchY = pacY - searchRadius;
+                    searchX = (short)(pacX - searchRadius);
+                    searchY = (short)(pacY - searchRadius);
                 }
                 else if (searchX == pacX + searchRadius)
                 {
-                    searchX = pacX - searchRadius;
+                    searchX = (short)(pacX - searchRadius);
                     searchY++;
                 }
                 else
@@ -57,7 +57,7 @@
                 if (gameGrid.FoodValue(location) > 0)
                 {
                     Console.Error.WriteLine($"Radius {searchRadius} From {pac.Location} food {location} Mine {pac.Mine}");
-                    _nextMove[pac.Id] = new NextMove(pac, location);
+                    _nextMove[pac.Id] = new NextAction(pac, location);
 
                     return _nextMove[pac.Id];
                 }
@@ -66,11 +66,11 @@
             if (cancellation.IsCancellationRequested)
             {
                 Console.Error.WriteLine("Aborting move search due to cancellation");
-                return new NextMove(pac, pac.Location);
+                return new NextAction(pac, pac.Location);
             }
 
             Console.Error.WriteLine("No pellets found in range");
-            return new NextMove(pac, pac.Location);
+            return new NextAction(pac, pac.Location);
         }
     }
 }

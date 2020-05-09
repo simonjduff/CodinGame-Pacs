@@ -8,7 +8,7 @@ namespace tests
     public class TestGrid
     {
         private readonly string[] _lines;
-        private readonly List<Pellet> _pellets = new List<Pellet>();
+        public List<Pellet> Pellets { get; } = new List<Pellet>();
         private readonly FakeInputOutput _inputOutput;
         private readonly List<Pac> _pacs = new List<Pac>();
 
@@ -20,21 +20,21 @@ namespace tests
             _inputOutput = inputOutput;
             _lines = new string[height];
             var lines = mapString.Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries).Select(l => l.ToCharArray()).ToArray();
-            for (int line = 0; line < height; line++)
+            for (short line = 0; line < height; line++)
             {
                 char[] finalLine = new char[width];
                 
-                for (int c = 0; c < width; c++)
+                for (short c = 0; c < width; c++)
                 {
                     Location location = new Location(c, line);
                     switch (lines[line][c])
                     {
                         case '.':
-                            _pellets.Add(new Pellet(location, 1));
+                            Pellets.Add(new Pellet(location, 1));
                             finalLine[c] = ' ';
                             break;
                         case 'X':
-                            _pellets.Add(new Pellet(location, 10));
+                            Pellets.Add(new Pellet(location, 10));
                             finalLine[c] = ' ';
                             break;
                         case '#':
@@ -50,7 +50,7 @@ namespace tests
         }
 
         public IEnumerable<string> GridLines => _lines.Select(l => new string(l));
-        public IEnumerable<string> PelletLines => _pellets.Select(p => $"{p.Location.X} {p.Location.Y} {p.Value}");
+        public IEnumerable<string> PelletLines => Pellets.Select(p => $"{p.Location.X} {p.Location.Y} {p.Value}");
 
         public void AddPac(Pac pac)
         {
@@ -67,7 +67,7 @@ namespace tests
 
         public void WritePellets()
         {
-            _inputOutput.AddInput(_pellets.Count.ToString());
+            _inputOutput.AddInput(Pellets.Count.ToString());
             foreach (var pellet in PelletLines)
             {
                 _inputOutput.AddInput(pellet);

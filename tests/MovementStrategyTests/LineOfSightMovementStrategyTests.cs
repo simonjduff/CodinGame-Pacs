@@ -1,14 +1,13 @@
-﻿using System.Threading;
-using System.Threading.Tasks;
+﻿using System.Threading.Tasks;
 using pacman;
 using Xunit;
 
-namespace tests
+namespace tests.MovementStrategyTests
 {
-    public class ClosestFoodStrategyTests
+    public class LineOfSightMovementStrategyTests
     {
         [Fact]
-        public async Task PacGoesToClosestFood()
+        public async Task PacMovesToClosestLineOfSight()
         {
             var pac = new Pac(0, true);
             pac.AddLocation(new Location(9, 1));
@@ -18,7 +17,7 @@ namespace tests
 
             Task awaiter = new GameTestHarness()
                 .WithTestGrid(31, 13, mapString)
-                .WithMovementStrategy(new ClosestFoodMovementStrategy())
+                .WithMovementStrategy(new LineOfSightMovementStrategy())
                 //.WithCancellationToken(new CancellationTokenSource(3000).Token)
                 .WithPac(enemy)
                 .WithPac(pac)

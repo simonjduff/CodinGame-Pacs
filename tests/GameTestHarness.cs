@@ -12,7 +12,7 @@ namespace tests
         private int _gridWidth;
         private int _gridHeight;
         private readonly List<Pac> _pacs = new List<Pac>();
-        private IMovementStrategy _movementStrategy;
+        private IActionStrategy _actionStrategy;
 
         public GameTestHarness WithCancellationToken(CancellationToken token)
         {
@@ -49,15 +49,15 @@ namespace tests
             testGrid.WritePacs();
             testGrid.WritePellets();
 
-            var game = new Player(localInputOutput, _movementStrategy);
+            var game = new Player(localInputOutput, _actionStrategy);
             var task = Task.Run(() => game.Run(_token), _token).ContinueWith(t => localInputOutput.CompleteOutput());
             inputOutput = localInputOutput;
             return task;
         }
 
-        public GameTestHarness WithMovementStrategy(IMovementStrategy movementStrategy)
+        public GameTestHarness WithMovementStrategy(IActionStrategy actionStrategy)
         {
-            _movementStrategy = movementStrategy;
+            _actionStrategy = actionStrategy;
             return this;
         }
     }
