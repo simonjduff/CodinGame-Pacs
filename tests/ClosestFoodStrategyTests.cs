@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Threading;
+using System.Threading.Tasks;
 using pacman;
 using Xunit;
 
@@ -18,7 +19,7 @@ namespace tests
             Task awaiter = new GameTestHarness()
                 .WithTestGrid(31, 13, mapString)
                 .WithMovementStrategy(new ClosestFoodMovementStrategy())
-                //.WithCancellationToken(new CancellationTokenSource(10000).Token)
+                //.WithCancellationToken(new CancellationTokenSource(3000).Token)
                 .WithPac(enemy)
                 .WithPac(pac)
                 .RunAsync(out var inputOutput);

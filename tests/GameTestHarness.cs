@@ -7,7 +7,7 @@ namespace tests
 {
     public class GameTestHarness
     {
-        private static CancellationToken _token = new CancellationTokenSource(1500).Token;
+        private CancellationToken _token = new CancellationTokenSource(1500).Token;
         private string _gridInput;
         private int _gridWidth;
         private int _gridHeight;
