@@ -6,7 +6,7 @@
     public class GameGrid
     {
         private readonly Dictionary<Location, GridCell> _cells = new Dictionary<Location, GridCell>();
-        private Dictionary<Location, Pellet> _pellets = null;
+        private Dictionary<Location, Pellet> _pellets = new Dictionary<Location, Pellet>();
 
         public GridCell this[Location location] => _cells[location];
 
