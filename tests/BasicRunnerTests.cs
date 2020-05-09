@@ -21,13 +21,14 @@ namespace tests
         {
             var harness = new GameTestHarness()
                 .WithTestGrid(31, 13, mapString)
+                .WithMovementStrategy(new FixedMovementStrategy())
                 .RunAsync(out FakeInputOutput inputOutput);
 
             await harness;
             while (inputOutput.CanReadOutput)
             {
                 var output = inputOutput.ReadOutput();
-                _testOutput.WriteLine(output);
+                Assert.Equal("MOVE 0 15 10", output);
             }
         }
 
@@ -45,6 +46,5 @@ namespace tests
 ###.#.###.#.###.###.#.###.#.###
 ....#.#...#.........#...#.#....
 ###############################";
-
-    };
+    }
 }
