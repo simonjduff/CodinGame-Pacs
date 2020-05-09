@@ -19,15 +19,19 @@ namespace tests
         [Fact]
         public async Task Test1()
         {
+            var pac = new Pac(0, true);
+            pac.AddLocation(new Location(9, 1));
             var harness = new GameTestHarness()
                 .WithTestGrid(31, 13, mapString)
+                .WithPac(pac)
+                .WithMovementStrategy(new FixedMovementStrategy())
                 .RunAsync(out FakeInputOutput inputOutput);
 
             await harness;
             while (inputOutput.CanReadOutput)
             {
                 var output = inputOutput.ReadOutput();
-                _testOutput.WriteLine(output);
+                Assert.Equal("MOVE 0 15 10", output);
             }
         }
 
@@ -45,6 +49,5 @@ namespace tests
 ###.#.###.#.###.###.#.###.#.###
 ....#.#...#.........#...#.#....
 ###############################";
-
-    };
+    }
 }

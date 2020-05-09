@@ -1,26 +1,34 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Threading;
-
-namespace pacman
+﻿namespace pacman
 {
+    using System.Linq;
+    using System;
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System.Threading;
     public class GameLoop
     {
         private readonly IInputOutput _inputOutput;
-        private readonly CancellationToken? _cancellation;
-        private readonly Dictionary<int, Pac> _pacs = new Dictionary<int, Pac>();
+        private readonly CancellationToken _cancellation;
+        private readonly Dictionary<int, Pac> _myPacs = new Dictionary<int, Pac>();
+        private readonly IMovementStrategy _movementStrategy;
+        private readonly GameGrid _gameGrid;
 
-        public GameLoop(IInputOutput inputOutput, CancellationToken? cancellation)
+        public GameLoop(IInputOutput inputOutput, 
+            CancellationToken cancellation,
+            IMovementStrategy movementStrategy,
+            GameGrid gameGrid)
         {
+            _gameGrid = gameGrid ?? throw new ArgumentNullException(nameof(gameGrid));
+            _movementStrategy = movementStrategy ?? throw new ArgumentNullException(nameof(movementStrategy));
             _cancellation = cancellation;
-            _inputOutput = inputOutput;
+            _inputOutput = inputOutput ?? throw new ArgumentNullException(nameof(_inputOutput));
         }
 
         public void Run()
         {
             while (true)
             {
-                if (_cancellation.HasValue && _cancellation.Value.IsCancellationRequested)
+                if (_cancellation.IsCancellationRequested)
                 {
                     break;
                 }
@@ -44,35 +52,48 @@ namespace pacman
                         int abilityCooldown = int.Parse(inputs[6]); // unused in wood leagues
                         var location = new Location(x, y);
 
-                        if (!_pacs.ContainsKey(pacId))
+                        if (!mine)
                         {
-                            _pacs.Add(pacId, new Pac(pacId, mine));
+                            continue;
                         }
 
-                        _pacs[pacId].AddLocation(location);
+                        if (!_myPacs.ContainsKey(pacId))
+                        {
+                            _myPacs.Add(pacId, new Pac(pacId, mine));
+                        }
+
+                        _myPacs[pacId].AddLocation(location);
                     }
 
                     int visiblePelletCount = int.Parse(_inputOutput.ReadLine()); // all pellets in sight
-                    Pellet[] pellets = new Pellet[visiblePelletCount];
-                    for (int i = 0; i < visiblePelletCount; i++)
-                    {
-                        inputs = _inputOutput.ReadLine().Split(' ');
-                        int x = int.Parse(inputs[0]);
-                        int y = int.Parse(inputs[1]);
-                        int value = int.Parse(inputs[2]); // amount of points this pellet is worth
-                        pellets[i] = new Pellet(new Location(x, y), value);
-                    }
+                    _gameGrid.SetPellets(ParsePellets(visiblePelletCount));
 
                     // Write an action using Console.WriteLine()
                     // To debug: Console.Error.WriteLine("Debug messages...");
 
-                    _inputOutput.WriteLine("MOVE 0 15 10"); // MOVE <pacId> <x> <y>
+                    //_inputOutput.WriteLine("MOVE 0 15 10"); // MOVE <pacId> <x> <y>
+
+                    var moves = string.Join("|", _myPacs.Values.Select(pac => _movementStrategy.Next(_gameGrid, pac,
+                        _cancellation)));
+                    _inputOutput.WriteLine(moves);
                 }
                 catch (OperationCanceledException)
                 {
                     break;
                 }
 
+            }
+        }
+
+        public IEnumerable<Pellet> ParsePellets(int pelletCount)
+        {
+            for (int i = 0; i < pelletCount; i++)
+            {
+                var inputs = _inputOutput.ReadLine().Split(' ');
+                int x = int.Parse(inputs[0]);
+                int y = int.Parse(inputs[1]);
+                short value = short.Parse(inputs[2]); // amount of points this pellet is worth
+                yield return new Pellet(new Location(x, y), value);
             }
         }
     }

@@ -1,7 +1,6 @@
-﻿using System.Collections.Generic;
-
-namespace pacman
+﻿namespace pacman
 {
+    using System.Collections.Generic;
     public struct Pac
     {
         public Pac(int id, bool mine)
