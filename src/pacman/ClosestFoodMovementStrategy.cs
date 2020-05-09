@@ -2,22 +2,23 @@
 {
     using System;
     using System.Threading;
+    using System.Collections.Generic;
 
     public class ClosestFoodMovementStrategy : IMovementStrategy
     {
         private const int MaxRadius = 10;
-        private NextMove? _nextMove = null;
+        private readonly Dictionary<int, NextMove> _nextMove = new Dictionary<int, NextMove>();
 
         public NextMove Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation)
         {
-            if (_nextMove.HasValue && gameGrid.FoodValue(_nextMove.Value.Location) > 0)
+            if (_nextMove.ContainsKey(pac.Id) && gameGrid.FoodValue(_nextMove[pac.Id].Location) > 0)
             {
-                return _nextMove.Value;
+                return _nextMove[pac.Id];
             }
 
-            if (_nextMove.HasValue && gameGrid.FoodValue(_nextMove.Value.Location) == 0)
+            if (_nextMove.ContainsKey(pac.Id) && gameGrid.FoodValue(_nextMove[pac.Id].Location) == 0)
             {
-                _nextMove = null;
+                _nextMove.Remove(pac.Id);
             }
 
             int searchRadius = 1;
@@ -56,9 +57,9 @@
                 if (gameGrid.FoodValue(location) > 0)
                 {
                     Console.Error.WriteLine($"Radius {searchRadius} From {pac.Location} food {location} Mine {pac.Mine}");
-                    _nextMove = new NextMove(pac, location);
+                    _nextMove[pac.Id] = new NextMove(pac, location);
 
-                    return _nextMove.Value;
+                    return _nextMove[pac.Id];
                 }
             }
 

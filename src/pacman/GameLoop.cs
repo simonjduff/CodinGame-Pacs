@@ -72,12 +72,10 @@
                     // To debug: Console.Error.WriteLine("Debug messages...");
 
                     //_inputOutput.WriteLine("MOVE 0 15 10"); // MOVE <pacId> <x> <y>
-                    Stopwatch timer = new Stopwatch();
-                    timer.Start();
-                    var move = _movementStrategy.Next(_gameGrid, _myPacs.Select(p => p.Value).Single(p => p.Mine), _cancellation);
-                    timer.Stop();
-                    Console.Error.WriteLine($"Move time {timer.ElapsedMilliseconds}");
-                    _inputOutput.WriteLine($"MOVE {move.PacId} {move.X} {move.Y}");
+
+                    var moves = string.Join("|", _myPacs.Values.Select(pac => _movementStrategy.Next(_gameGrid, pac,
+                        _cancellation)));
+                    _inputOutput.WriteLine(moves);
                 }
                 catch (OperationCanceledException)
                 {
