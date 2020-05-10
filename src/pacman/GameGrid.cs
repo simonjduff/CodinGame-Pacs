@@ -105,30 +105,32 @@
         /// <returns></returns>
         public IEnumerable<Pellet> VisiblePelletsFrom(Location location)
         {
-            foreach (var result in (SearchNDirection(location, 
-                l => l.X < 0 ? new Location(Width, l.Y) : new Location((short)(l.X - 1), l.Y))))
+            foreach (var result in SearchNDirection<Pellet>(location, 
+                l => l.X < 0 ? new Location(Width, l.Y) : new Location((short)(l.X - 1), l.Y), _pellets))
             {
                 yield return result;
             }
-            foreach (var result in (SearchNDirection(location, 
-                l => l.X >= Width -1 ? new Location(0, l.Y) : new Location((short)(l.X + 1), l.Y))))
+            foreach (var result in SearchNDirection<Pellet>(location, 
+                l => l.X >= Width -1 ? new Location(0, l.Y) : new Location((short)(l.X + 1), l.Y), _pellets))
             {
                 yield return result;
             }
-            foreach (var result in (SearchNDirection(location, 
-                l => l.Y < 0 ? new Location(l.X, Height) : new Location(l.X, (short)(l.Y - 1)))))
+            foreach (var result in SearchNDirection<Pellet>(location, 
+                l => l.Y < 0 ? new Location(l.X, Height) : new Location(l.X, (short)(l.Y - 1)), _pellets))
             {
                 yield return result;
             }
-            foreach (var result in (SearchNDirection(location, 
-                l => l.Y >= Height -1 ? new Location(l.X, 0) : new Location(l.X, (short)(l.Y + 1)))))
+            foreach (var result in SearchNDirection<Pellet>(location, 
+                l => l.Y >= Height -1 ? new Location(l.X, 0) : new Location(l.X, (short)(l.Y + 1)), _pellets))
             {
                 yield return result;
             }
         }
 
-        private IEnumerable<Pellet> SearchNDirection(Location location, 
-            Func<Location, Location> next)
+        private IEnumerable<T> SearchNDirection<T>(Location location, 
+            Func<Location, Location> next,
+            IDictionary<Location, T> searchCollection
+            )
         {
             var search = next(location);
             do
@@ -145,9 +147,9 @@
                     break;
                 }
 
-                if (_pellets.ContainsKey(search))
+                if (searchCollection.ContainsKey(search))
                 {
-                    yield return _pellets[search];
+                    yield return searchCollection[search];
                 }
 
                 if (search.Equals(location))

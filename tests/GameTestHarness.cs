@@ -51,7 +51,12 @@ namespace tests
             testGrid.WritePellets();
 
             var game = new Player(localInputOutput, _actionStrategy);
-            var task = Task.Run(() => game.Run(_token), _token).ContinueWith(t => localInputOutput.CompleteOutput());
+            var task = Task.Run(() =>
+            {
+                game.Run(_token);
+                localInputOutput.CompleteOutput();
+            }, _token);
+
             inputOutput = localInputOutput;
             return task;
         }

@@ -1,4 +1,6 @@
-﻿namespace pacman
+﻿using Microsoft.VisualBasic.CompilerServices;
+
+namespace pacman
 {
     public struct Location
     {
@@ -27,7 +29,14 @@
             }
 
             Location loc = (Location) obj;
-            return loc.X == X && loc.Y == Y;
+            return this == loc;
+        }
+
+        public static bool operator ==(Location left, Location right) => left.X == right.X && left.Y == right.Y;
+
+        public static bool operator !=(Location left, Location right)
+        {
+            return !(left == right);
         }
     }
 }

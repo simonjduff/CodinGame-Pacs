@@ -32,7 +32,17 @@ namespace pacman
         public IActionStrategy CurrentStrategy { get; set; }
 
         public NextAction NextAction(GameGrid grid, CancellationToken cancellation)
-            => CurrentStrategy.Next(grid, this, cancellation);
+        {
+            var nextAction = CurrentStrategy.Next(grid, this, cancellation);
+            if (nextAction is MoveAction moveAction)
+            {
+                LastMoveAction = moveAction;
+            }
+
+            return nextAction;
+        }
+
+        public MoveAction LastMoveAction { get; private set; }
 
         public PacKey Key { get; }
         public int Id { get; }

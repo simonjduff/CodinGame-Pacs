@@ -1,24 +1,17 @@
 ﻿namespace pacman.ActionStrategies
 {
     using System;
-    using System.Collections.Generic;
     using System.Threading;
     [Obsolete("This isn't useful when food is invisible")]
     public class ClosestFoodMovementStrategy : IActionStrategy
     {
         private const int MaxRadius = 10;
-        private readonly Dictionary<PacKey, MoveAction> _nextMove = new Dictionary<PacKey, MoveAction>();
 
         public NextAction Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation)
         {
-            if (_nextMove.ContainsKey(pac.Key) && gameGrid.FoodValue(_nextMove[pac.Key].Location) > 0)
+            if (pac.LastMoveAction != null && gameGrid.FoodValue(pac.LastMoveAction.Location) > 0)
             {
-                return _nextMove[pac.Key];
-            }
-
-            if (_nextMove.ContainsKey(pac.Key) && gameGrid.FoodValue(_nextMove[pac.Key].Location) == 0)
-            {
-                _nextMove.Remove(pac.Key);
+                return new NoAction(pac);
             }
 
             short searchRadius = 1;
@@ -57,9 +50,8 @@
                 if (gameGrid.FoodValue(location) > 0)
                 {
                     Console.Error.WriteLine($"Radius {searchRadius} From {pac.Location} food {location} Mine {pac.Mine}");
-                    _nextMove[pac.Key] = new MoveAction(pac, location);
 
-                    return _nextMove[pac.Key];
+                    return new MoveAction(pac, location);
                 }
             }
 
@@ -70,7 +62,7 @@
             }
 
             Console.Error.WriteLine("No pellets found in range");
-            return new MoveAction(pac, pac.Location);
+            return new NoAction(pac);
         }
     }
 }

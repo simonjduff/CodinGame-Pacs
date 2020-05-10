@@ -16,14 +16,14 @@ namespace tests.MovementStrategyTests
             var enemy = new Pac(1, false, new LineOfSightMovementStrategy());
             enemy.AddLocation(new Location(25, 11));
 
-            Task awaiter = new GameTestHarness()
+            await new GameTestHarness()
                 .WithTestGrid(31, 13, mapString)
                 .WithMovementStrategy(new LineOfSightMovementStrategy())
                 //.WithCancellationToken(new CancellationTokenSource(3000).Token)
                 .WithPac(enemy)
                 .WithPac(pac)
                 .RunAsync(out var inputOutput);
-            await awaiter;
+
             Assert.True(inputOutput.CanReadOutput);
             var output = inputOutput.ReadOutput();
             Assert.Equal("MOVE 0 10 1", output);

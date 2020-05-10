@@ -12,6 +12,15 @@
         public sealed override string ToString() => ActionString;
     }
 
+    public class NoAction : NextAction
+    {
+        public NoAction(Pac pac) : base(pac)
+        {
+        }
+
+        public override string ActionString => string.Empty;
+    }
+
     public class SpeedAction : NextAction
     {
         public SpeedAction(Pac pac):base(pac)
