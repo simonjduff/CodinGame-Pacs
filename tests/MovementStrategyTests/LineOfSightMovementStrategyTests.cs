@@ -1,6 +1,7 @@
 ﻿using System.Threading.Tasks;
 using pacman;
 using pacman.ActionStrategies;
+using pacman.PelletsSeenStrategies;
 using Xunit;
 
 namespace tests.MovementStrategyTests
@@ -10,15 +11,15 @@ namespace tests.MovementStrategyTests
         [Fact]
         public async Task PacMovesToClosestLineOfSight()
         {
-            var pac = new Pac(0, true, new LineOfSightMovementStrategy());
+            var pac = new Pac(0, true, new HungryStrategy(new LineOfSightMovementStrategy()));
             pac.AddLocation(new Location(9, 1));
 
-            var enemy = new Pac(1, false, new LineOfSightMovementStrategy());
+            var enemy = new Pac(1, false, new HungryStrategy(new LineOfSightMovementStrategy()));
             enemy.AddLocation(new Location(25, 11));
 
             await new GameTestHarness()
                 .WithTestGrid(31, 13, mapString)
-                .WithMovementStrategy(new LineOfSightMovementStrategy())
+                .WithMovementStrategy(new HungryStrategy(new LineOfSightMovementStrategy()))
                 //.WithCancellationToken(new CancellationTokenSource(3000).Token)
                 .WithPac(enemy)
                 .WithPac(pac)

@@ -1,22 +1,30 @@
-﻿namespace pacman.ActionStrategies
+﻿namespace pacman.PelletsSeenStrategies
 {
     using System;
+    using System.Collections.Generic;
     using System.Linq;
     using System.Threading;
-    public class LineOfSightMovementStrategy : IActionStrategy
+    public class LineOfSightMovementStrategy : IPelletsSeenStrategy
     {
         private static readonly Random Random = new Random();
 
-        public NextAction Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation)
+        public NextAction Next(GameGrid gameGrid, 
+            Pac pac, 
+            CancellationToken cancellation,
+            List<Pellet> visiblePellets)
         {
             Location loc = pac.Location;
             Location targetLocation;
 
-            var visiblePellets = gameGrid.VisiblePelletsFrom(pac.Location).ToArray();
-
             if (!visiblePellets.Any())
             {
+                if (pac.LastMoveAction.Location != pac.Location)
+                {
+                    return new MoveAction(pac, pac.LastMoveAction.Location);
+                }
+
                 targetLocation = new Location((short)Random.Next(0, gameGrid.Width), (short)Random.Next(0, gameGrid.Height));
+                Console.Error.WriteLine($"Pac {pac.Id} No food. Going to random location {targetLocation}");
             }
             else
             {
@@ -31,11 +39,8 @@
                 {
                     targetLocation = closestX.Location;
                 }
-            }
 
-            if (pac.LastMoveAction?.Location == targetLocation)
-            {
-                return new NoAction(pac);
+                Console.Error.WriteLine($"Pac {pac.Id} Found food. Going to location {targetLocation}");
             }
 
             return new MoveAction(pac, targetLocation);

@@ -2,7 +2,9 @@
 {
     using System.Collections.Generic;
     using System.Threading;
-    using pacman.ActionStrategies;
+    using ActionStrategies;
+    using EnemiesSeenStrategies;
+    using PelletsSeenStrategies;
     public class Player
     {
         private readonly IInputOutput _consoleInputOutput;
@@ -20,7 +22,7 @@
             //var inputOutput = new LoggingConsoleInputOutput();
             var inputOutput = new ConsoleInputOutput();
             //Player player = new Player(inputOutput, new ClosestFoodMovementStrategy());
-            Player player = new Player(inputOutput, new LineOfSightMovementStrategy());
+            Player player = new Player(inputOutput, new BiteyCompositeStrategy(new LineOfSightMovementStrategy(), new YappyDogStrategy()));
             var cancellation = new CancellationTokenSource();
             player.Run(cancellation.Token);
         }

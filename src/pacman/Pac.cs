@@ -1,32 +1,23 @@
-﻿using System.Threading;
-using pacman.ActionStrategies;
-
-namespace pacman
+﻿namespace pacman
 {
+    using System.Threading;
+    using pacman.ActionStrategies;
     using System.Collections.Generic;
-    public class Pac
+    using System;
+    public class Pac : IEquatable<Pac>
     {
         public Pac(int id, 
             bool mine, 
-            PacType type,
             IActionStrategy strategy
             )
         {
             Id = id;
             Mine = mine;
             LocationHistory  = new List<Location>(50);
-            Type = type;
             SpeedTurnsLeft = 0;
             AbilityCooldown = 0;
             Key = new PacKey(Id, mine);
             CurrentStrategy = strategy;
-        }
-
-        public Pac(int id,
-            bool mine,
-            IActionStrategy strategy) 
-            : this(id, mine, PacType.Neutral, strategy)
-        {
         }
 
         public IActionStrategy CurrentStrategy { get; set; }
@@ -47,10 +38,25 @@ namespace pacman
         public PacKey Key { get; }
         public int Id { get; }
         public bool Mine { get; }
-        public PacType Type { get; private set; }
+        private PacType _pacType = "NEUTRAL";
+
+        public PacType Type
+        {
+            get => _pacType;
+            set
+            {
+                Console.Error.WriteLine($"{(Mine ? "My" : "Enemy")} pac {Id} has been told it is {value}");
+                _pacType = value;
+            }
+        }
+
         public Location Location => LocationHistory[^1]; // ^1 is a System.Index indicating the last value
         public short SpeedTurnsLeft { get; set; }
         public short AbilityCooldown { get; set; }
+        public bool SpecialActionReady => AbilityCooldown == 0;
+        public bool Equals(Pac other)
+            => Id == other?.Id && Location == other?.Location;
+
         public override int GetHashCode() => new PacKey(Id, Mine).GetHashCode() * 19;
         public List<Location> LocationHistory;
 
@@ -64,7 +70,10 @@ namespace pacman
     {
         public PacKey(int pacId, bool mine)
         {
-            Key = pacId * 10061 * (mine ? 7 : 11);
+            var hash = 10061;
+            hash = hash * 11 + pacId;
+            hash = hash * 11 + (mine ? 7 : 11);
+            Key = hash;
         }
         public int Key { get; }
         public override int GetHashCode() => Key;

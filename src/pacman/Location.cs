@@ -1,6 +1,4 @@
-﻿using Microsoft.VisualBasic.CompilerServices;
-
-namespace pacman
+﻿namespace pacman
 {
     public struct Location
     {

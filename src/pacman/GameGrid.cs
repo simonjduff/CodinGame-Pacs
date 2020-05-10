@@ -81,7 +81,17 @@
 
         public void SetEnemies(IEnumerable<Pac> enemies)
         {
-            _enemies = enemies.ToDictionary(k => k.Location);
+            _enemies = new Dictionary<Location, Pac>();
+            foreach (var enemy in enemies)
+            {
+                if (_enemies.ContainsKey(enemy.Location))
+                {
+                    Console.Error.WriteLine($"Two enemies in same space. {enemy.Id} and {_enemies[enemy.Location].Id}");
+                    throw new InvalidOperationException("Two enemies in same space");
+                }
+
+                _enemies.Add(enemy.Location, enemy);
+            }
         }
 
         public struct GridCell

@@ -1,13 +1,18 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.30011.22
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{F45EFFD4-6C6A-4EEF-A85A-CF0AB4173639}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "pacman", "src\pacman\pacman.csproj", "{487CC4D8-D1CA-4B5F-ADB5-65069CFFF591}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "pacman", "src\pacman\pacman.csproj", "{487CC4D8-D1CA-4B5F-ADB5-65069CFFF591}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "tests", "tests\tests.csproj", "{2E683C06-DA0A-4FFF-96A2-D6D68ADC6B24}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "tests", "tests\tests.csproj", "{2E683C06-DA0A-4FFF-96A2-D6D68ADC6B24}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution FIles", "Solution FIles", "{39A341F1-18B8-47E0-B6EA-0878D374B3C7}"
+	ProjectSection(SolutionItems) = preProject
+		game.cs = game.cs
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,9 +22,6 @@ Global
 		Release|Any CPU = Release|Any CPU
 		Release|x64 = Release|x64
 		Release|x86 = Release|x86
-	EndGlobalSection
-	GlobalSection(SolutionProperties) = preSolution
-		HideSolutionNode = FALSE
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
 		{487CC4D8-D1CA-4B5F-ADB5-65069CFFF591}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
@@ -47,7 +49,13 @@ Global
 		{2E683C06-DA0A-4FFF-96A2-D6D68ADC6B24}.Release|x86.ActiveCfg = Release|Any CPU
 		{2E683C06-DA0A-4FFF-96A2-D6D68ADC6B24}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
 	GlobalSection(NestedProjects) = preSolution
 		{487CC4D8-D1CA-4B5F-ADB5-65069CFFF591} = {F45EFFD4-6C6A-4EEF-A85A-CF0AB4173639}
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {490D8979-ACA5-46D8-8DB6-125A6807AED5}
 	EndGlobalSection
 EndGlobal

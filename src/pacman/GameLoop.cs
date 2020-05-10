@@ -39,10 +39,12 @@
                     int myScore = int.Parse(inputs[0]);
                     int opponentScore = int.Parse(inputs[1]);
                     int visiblePacCount = int.Parse(_inputOutput.ReadLine()); // all your pacs and enemy pacs in sight
-                    Pac[] pacs = new Pac[visiblePacCount];
+                    List<PacKey> seenKeys = new List<PacKey>();
                     for (int i = 0; i < visiblePacCount; i++)
                     {
-                        inputs = _inputOutput.ReadLine().Split(' ');
+                        var line = _inputOutput.ReadLine();
+                        Console.Error.WriteLine($"Pac line {line}");
+                        inputs = line.Split(' ');
                         int pacId = int.Parse(inputs[0]); // pac number (unique within a team)
                         bool mine = inputs[1] != "0"; // true if this pac is yours
                         short x = short.Parse(inputs[2]); // position in the grid
@@ -55,9 +57,10 @@
                         Pac pac;
 
                         var key = new PacKey(pacId, mine);
+                        seenKeys.Add(key);
                         if (!_pacs.ContainsKey(key))
                         {
-                            _pacs.Add(key, new Pac(pacId, mine, typeId, _actionStrategy));
+                            _pacs.Add(key, new Pac(pacId, mine, _actionStrategy));
                         }
 
                         pac = _pacs[key];
@@ -65,6 +68,13 @@
                         pac.AddLocation(location);
                         pac.AbilityCooldown = abilityCooldown;
                         pac.SpeedTurnsLeft = speedTurnsLeft;
+                        pac.Type = typeId;
+                    }
+
+                    var deletion = _pacs.Select(p => p.Key).Where(p => !seenKeys.Contains(p));
+                    foreach (var d in deletion)
+                    {
+                        _pacs.Remove(d);
                     }
 
                     int visiblePelletCount = int.Parse(_inputOutput.ReadLine()); // all pellets in sight
