@@ -69,6 +69,7 @@
 
                     int visiblePelletCount = int.Parse(_inputOutput.ReadLine()); // all pellets in sight
                     _gameGrid.SetPellets(ParsePellets(visiblePelletCount));
+                    _gameGrid.SetEnemies(_pacs.Values.Where(p => !p.Mine));
 
                     // Write an action using Console.WriteLine()
                     // To debug: Console.Error.WriteLine("Debug messages...");

@@ -9,6 +9,7 @@
         private Dictionary<Location, Pellet> _pellets = new Dictionary<Location, Pellet>();
         public short Width = 0;
         public short Height = 0;
+        private Dictionary<Location, Pac> _enemies;
 
         public GridCell this[Location location] => _cells[location];
 
@@ -78,6 +79,11 @@
             _pellets = pellets.ToDictionary(k => k.Location);
         }
 
+        public void SetEnemies(IEnumerable<Pac> enemies)
+        {
+            _enemies = enemies.ToDictionary(k => k.Location);
+        }
+
         public struct GridCell
         {
             public GridCell(bool traversable
@@ -103,25 +109,28 @@
         /// </summary>
         /// <param name="location"></param>
         /// <returns></returns>
-        public IEnumerable<Pellet> VisiblePelletsFrom(Location location)
+        public IEnumerable<Pellet> VisiblePelletsFrom(Location location) => VisibleTFrom(location, _pellets);
+        public IEnumerable<Pac> VisibleEnemiesFrom(Location location) => VisibleTFrom(location, _enemies);
+
+        private IEnumerable<T> VisibleTFrom<T>(Location location, IDictionary<Location, T> dictionary)
         {
-            foreach (var result in SearchNDirection<Pellet>(location, 
-                l => l.X < 0 ? new Location(Width, l.Y) : new Location((short)(l.X - 1), l.Y), _pellets))
+            foreach (var result in SearchNDirection<T>(location,
+                l => l.X < 0 ? new Location(Width, l.Y) : new Location((short)(l.X - 1), l.Y), dictionary))
             {
                 yield return result;
             }
-            foreach (var result in SearchNDirection<Pellet>(location, 
-                l => l.X >= Width -1 ? new Location(0, l.Y) : new Location((short)(l.X + 1), l.Y), _pellets))
+            foreach (var result in SearchNDirection<T>(location,
+                l => l.X >= Width - 1 ? new Location(0, l.Y) : new Location((short)(l.X + 1), l.Y), dictionary))
             {
                 yield return result;
             }
-            foreach (var result in SearchNDirection<Pellet>(location, 
-                l => l.Y < 0 ? new Location(l.X, Height) : new Location(l.X, (short)(l.Y - 1)), _pellets))
+            foreach (var result in SearchNDirection<T>(location,
+                l => l.Y < 0 ? new Location(l.X, Height) : new Location(l.X, (short)(l.Y - 1)), dictionary))
             {
                 yield return result;
             }
-            foreach (var result in SearchNDirection<Pellet>(location, 
-                l => l.Y >= Height -1 ? new Location(l.X, 0) : new Location(l.X, (short)(l.Y + 1)), _pellets))
+            foreach (var result in SearchNDirection<T>(location,
+                l => l.Y >= Height - 1 ? new Location(l.X, 0) : new Location(l.X, (short)(l.Y + 1)), dictionary))
             {
                 yield return result;
             }
