@@ -1,11 +1,16 @@
-﻿namespace pacman
+﻿using System.Threading;
+using pacman.ActionStrategies;
+
+namespace pacman
 {
     using System.Collections.Generic;
     public class Pac
     {
         public Pac(int id, 
             bool mine, 
-            PacType type)
+            PacType type,
+            IActionStrategy strategy
+            )
         {
             Id = id;
             Mine = mine;
@@ -14,12 +19,20 @@
             SpeedTurnsLeft = 0;
             AbilityCooldown = 0;
             Key = new PacKey(Id, mine);
+            CurrentStrategy = strategy;
         }
 
         public Pac(int id,
-            bool mine) : this(id, mine, PacType.Neutral)
+            bool mine,
+            IActionStrategy strategy) 
+            : this(id, mine, PacType.Neutral, strategy)
         {
         }
+
+        public IActionStrategy CurrentStrategy { get; set; }
+
+        public NextAction NextAction(GameGrid grid, CancellationToken cancellation)
+            => CurrentStrategy.Next(grid, this, cancellation);
 
         public PacKey Key { get; }
         public int Id { get; }

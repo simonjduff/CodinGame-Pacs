@@ -10,10 +10,10 @@ namespace tests.MovementStrategyTests
         [Fact]
         public async Task PacMovesToClosestLineOfSight()
         {
-            var pac = new Pac(0, true);
+            var pac = new Pac(0, true, new LineOfSightMovementStrategy());
             pac.AddLocation(new Location(9, 1));
 
-            var enemy = new Pac(1, false);
+            var enemy = new Pac(1, false, new LineOfSightMovementStrategy());
             enemy.AddLocation(new Location(25, 11));
 
             Task awaiter = new GameTestHarness()

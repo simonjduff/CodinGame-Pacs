@@ -7,7 +7,7 @@
     public class ClosestFoodMovementStrategy : IActionStrategy
     {
         private const int MaxRadius = 10;
-        private readonly Dictionary<PacKey, NextAction> _nextMove = new Dictionary<PacKey, NextAction>();
+        private readonly Dictionary<PacKey, MoveAction> _nextMove = new Dictionary<PacKey, MoveAction>();
 
         public NextAction Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation)
         {
@@ -57,7 +57,7 @@
                 if (gameGrid.FoodValue(location) > 0)
                 {
                     Console.Error.WriteLine($"Radius {searchRadius} From {pac.Location} food {location} Mine {pac.Mine}");
-                    _nextMove[pac.Key] = new NextAction(pac, location);
+                    _nextMove[pac.Key] = new MoveAction(pac, location);
 
                     return _nextMove[pac.Key];
                 }
@@ -66,11 +66,11 @@
             if (cancellation.IsCancellationRequested)
             {
                 Console.Error.WriteLine("Aborting move search due to cancellation");
-                return new NextAction(pac, pac.Location);
+                return new MoveAction(pac, pac.Location);
             }
 
             Console.Error.WriteLine("No pellets found in range");
-            return new NextAction(pac, pac.Location);
+            return new MoveAction(pac, pac.Location);
         }
     }
 }

@@ -17,7 +17,7 @@
 
             if (!visiblePellets.Any())
             {
-                return new NextAction(pac, new Location((short)Random.Next(0, gameGrid.Width), (short)Random.Next(0, gameGrid.Height)));
+                return new MoveAction(pac, new Location((short)Random.Next(0, gameGrid.Width), (short)Random.Next(0, gameGrid.Height)));
             }
 
             var closestY = visiblePellets.OrderBy(p => Math.Abs(p.Location.X - loc.X)).FirstOrDefault();
@@ -25,9 +25,9 @@
 
             if (Math.Abs(closestX.Location.X - loc.X) < Math.Abs(closestY.Location.Y - loc.Y))
             {
-                return new NextAction(pac, closestX.Location);
+                return new MoveAction(pac, closestX.Location);
             }
-            return new NextAction(pac, closestX.Location);
+            return new MoveAction(pac, closestX.Location);
 
         }
     }

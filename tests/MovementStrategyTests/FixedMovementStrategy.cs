@@ -8,7 +8,7 @@ namespace tests.MovementStrategyTests
     {
         public NextAction Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation)
         {
-            return new NextAction(pac, new Location(15, 10));
+            return new MoveAction(pac, new Location(15, 10));
         }
     }
 }

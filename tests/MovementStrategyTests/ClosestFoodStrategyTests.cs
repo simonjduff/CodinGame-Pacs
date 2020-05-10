@@ -11,10 +11,14 @@ namespace tests.MovementStrategyTests
         [Fact]
         public async Task PacGoesToClosestFood()
         {
-            var pac = new Pac(0, true);
+#pragma warning disable 618
+            var pac = new Pac(0, true, new ClosestFoodMovementStrategy());
+#pragma warning restore 618
             pac.AddLocation(new Location(9, 1));
 
-            var enemy = new Pac(1, false);
+#pragma warning disable 618
+            var enemy = new Pac(1, false, new ClosestFoodMovementStrategy());
+#pragma warning restore 618
             enemy.AddLocation(new Location(25, 11));
 
             Task awaiter = new GameTestHarness()

@@ -57,8 +57,7 @@
                         var key = new PacKey(pacId, mine);
                         if (!_pacs.ContainsKey(key))
                         {
-
-                            _pacs.Add(key, new Pac(pacId, mine, typeId));
+                            _pacs.Add(key, new Pac(pacId, mine, typeId, _actionStrategy));
                         }
 
                         pac = _pacs[key];
@@ -78,8 +77,7 @@
 
                     var myPacs = _pacs.Values.Where(p => p.Mine);
 
-                    var moves = string.Join("|", myPacs.Select(pac => _actionStrategy.Next(_gameGrid, pac,
-                        _cancellation)));
+                    var moves = string.Join("|", myPacs.Select(pac => pac.NextAction(_gameGrid, _cancellation)));
                     _inputOutput.WriteLine(moves);
                 }
                 catch (OperationCanceledException)
