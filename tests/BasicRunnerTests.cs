@@ -2,6 +2,7 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 using pacman;
+using pacman.ActionStrategies;
 using tests.MovementStrategyTests;
 using Xunit;
 using Xunit.Abstractions;
@@ -20,7 +21,7 @@ namespace tests
         [Fact]
         public async Task Test1()
         {
-            var pac = new Pac(0, true, new FixedMovementStrategy());
+            var pac = new Pac(0, true, new FixedMovementStrategy(), new GiveWayMovementStrategy());
             pac.AddLocation(new Location(9, 1));
             var harness = new GameTestHarness()
                 .WithTestGrid(31, 13, mapString)

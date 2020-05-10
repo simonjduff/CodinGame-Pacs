@@ -10,6 +10,7 @@
         public short Width = 0;
         public short Height = 0;
         private Dictionary<Location, Pac> _enemies;
+        private static readonly Random Random = new Random();
 
         public GridCell this[Location location] => _cells[location];
 
@@ -111,6 +112,21 @@
 
             public bool Traversable { get; }
             public Pac Pac { get; }
+        }
+
+        public Location RandomLocation
+        {
+            get
+            {
+                while (true)
+                {
+                    var randomLocation = new Location((short)Random.Next(0, Width), (short)Random.Next(0, Height));
+                    if (_cells[randomLocation].Traversable)
+                    {
+                        return randomLocation;
+                    }
+                }
+            }
         }
 
         /// <summary>

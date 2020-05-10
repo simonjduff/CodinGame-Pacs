@@ -60,7 +60,7 @@
                         seenKeys.Add(key);
                         if (!_pacs.ContainsKey(key))
                         {
-                            _pacs.Add(key, new Pac(pacId, mine, _actionStrategy));
+                            _pacs.Add(key, new Pac(pacId, mine, _actionStrategy, new GiveWayMovementStrategy()));
                         }
 
                         pac = _pacs[key];
@@ -88,7 +88,18 @@
 
                     var myPacs = _pacs.Values.Where(p => p.Mine);
 
-                    var moves = string.Join("|", myPacs.Select(pac => pac.NextAction(_gameGrid, _cancellation)));
+                    var nextActions = myPacs.Select(pac => pac.NextAction(_gameGrid, _cancellation)).ToDictionary(p => p.Pac.Key);
+
+                    var collisions =
+                        nextActions.Values.Where(n => n is MoveAction).GroupBy(g => ((MoveAction) g).Location).Where(g => g.Count() > 1);
+                    foreach (var collision in collisions)
+                    {
+                        var giveWayer = collision.First().Pac;
+                        nextActions[giveWayer.Key] = giveWayer.GiveWay(_gameGrid, _cancellation);
+                    }
+                    
+
+                    var moves = string.Join("|", nextActions.Values);
                     _inputOutput.WriteLine(moves);
                 }
                 catch (OperationCanceledException)

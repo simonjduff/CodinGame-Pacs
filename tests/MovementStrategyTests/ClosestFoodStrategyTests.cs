@@ -12,12 +12,12 @@ namespace tests.MovementStrategyTests
         public async Task PacGoesToClosestFood()
         {
 #pragma warning disable 618
-            var pac = new Pac(0, true, new ClosestFoodMovementStrategy());
+            var pac = new Pac(0, true, new ClosestFoodMovementStrategy(), new GiveWayMovementStrategy());
 #pragma warning restore 618
             pac.AddLocation(new Location(9, 1));
 
 #pragma warning disable 618
-            var enemy = new Pac(1, false, new ClosestFoodMovementStrategy());
+            var enemy = new Pac(1, false, new ClosestFoodMovementStrategy(), new GiveWayMovementStrategy());
 #pragma warning restore 618
             enemy.AddLocation(new Location(25, 11));
 

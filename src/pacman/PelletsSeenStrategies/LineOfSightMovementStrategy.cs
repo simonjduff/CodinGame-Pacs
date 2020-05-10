@@ -23,7 +23,7 @@
                     return new MoveAction(pac, pac.LastMoveAction.Location);
                 }
 
-                targetLocation = new Location((short)Random.Next(0, gameGrid.Width), (short)Random.Next(0, gameGrid.Height));
+                targetLocation = gameGrid.RandomLocation;
                 Console.Error.WriteLine($"Pac {pac.Id} No food. Going to random location {targetLocation}");
             }
             else
@@ -38,6 +38,11 @@
                 else
                 {
                     targetLocation = closestX.Location;
+                }
+
+                if (pac.SpecialActionReady && Random.Next(0, 9) <= 2)
+                {
+                    return new SpeedAction(pac);
                 }
 
                 Console.Error.WriteLine($"Pac {pac.Id} Found food. Going to location {targetLocation}");

@@ -8,9 +8,11 @@
     {
         public Pac(int id, 
             bool mine, 
-            IActionStrategy strategy
+            IActionStrategy strategy,
+            GiveWayMovementStrategy giveWayMovementStrategy
             )
         {
+            _giveWayMovementStrategy = giveWayMovementStrategy;
             Id = id;
             Mine = mine;
             LocationHistory  = new List<Location>(50);
@@ -59,11 +61,15 @@
 
         public override int GetHashCode() => new PacKey(Id, Mine).GetHashCode() * 19;
         public List<Location> LocationHistory;
+        private readonly GiveWayMovementStrategy _giveWayMovementStrategy;
 
         public void AddLocation(Location location)
         {
             LocationHistory.Add(location);
         }
+
+        public NextAction GiveWay(GameGrid grid, CancellationToken cancellation) =>
+            _giveWayMovementStrategy.Next(grid, this, cancellation);
     }
 
     public struct PacKey
