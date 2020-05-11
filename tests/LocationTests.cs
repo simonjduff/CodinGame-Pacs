@@ -1,4 +1,6 @@
-﻿using pacman;
+﻿using System.Collections.Generic;
+using System.Security.Cryptography.X509Certificates;
+using pacman;
 using Xunit;
 
 namespace tests
@@ -17,5 +19,16 @@ namespace tests
             Assert.Equal(expected, left == right);
             Assert.Equal(expected, right == left);
         }
+
+        [Fact]
+        public void ContainsTest()
+        {
+            List<Location> locations = new List<Location>();
+            var left = new Location(1,1);
+            var right = new Location(1, 1);
+            locations.Add(left);
+            Assert.Contains(right, locations);
+        }
+
     }
 }

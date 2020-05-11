@@ -1,6 +1,7 @@
 ﻿namespace pacman
 {
-    public struct Location
+    using System;
+    public struct Location : IEquatable<Location>
     {
         public Location(short x, short y)
         {
@@ -12,9 +13,10 @@
 
         public override int GetHashCode()
         {
-            var hash = 50543 * X;
-            hash = 50543 * hash * Y;
-            return hash;
+            unchecked
+            {
+                return (X.GetHashCode() * 397) ^ Y.GetHashCode();
+            }
         }
 
         public override string ToString() => $"{X} {Y}";
@@ -35,6 +37,11 @@
         public static bool operator !=(Location left, Location right)
         {
             return !(left == right);
+        }
+
+        public bool Equals(Location other)
+        {
+            return X == other.X && Y == other.Y;
         }
     }
 }

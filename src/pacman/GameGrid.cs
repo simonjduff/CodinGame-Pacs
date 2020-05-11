@@ -38,10 +38,10 @@
                         switch (line[cell])
                         {
                             case '#':
-                                _cells.Add(location, new GridCell(false));
+                                _cells.Add(location, new GridCell(false, location));
                                 continue;
                             case ' ':
-                                _cells.Add(location, new GridCell(true));
+                                _cells.Add(location, new GridCell(true, location));
                                 continue;
                             default:
                                 throw new InvalidOperationException($"Unrecognized cell type {line[cell]}");
@@ -61,7 +61,6 @@
 
         public void EatFood(Location location)
         {
-            GridCell original = _cells[location];
             _pellets.Remove(location);
         }
 
@@ -95,25 +94,6 @@
             }
         }
 
-        public struct GridCell
-        {
-            public GridCell(bool traversable
-            ) : this(traversable, null)
-            {
-            }
-
-            public GridCell(bool traversable,
-                Pac pac
-            )
-            {
-                Traversable = traversable;
-                Pac = pac;
-            }
-
-            public bool Traversable { get; }
-            public Pac Pac { get; }
-        }
-
         public Location RandomLocation
         {
             get
@@ -138,63 +118,98 @@
         public IEnumerable<Pellet> VisiblePelletsFrom(Location location) => VisibleTFrom(location, _pellets);
         public IEnumerable<Pac> VisibleEnemiesFrom(Location location) => VisibleTFrom(location, _enemies);
 
-        private IEnumerable<T> VisibleTFrom<T>(Location location, IDictionary<Location, T> dictionary)
+        public GridCell West(Location origin)
         {
-            foreach (var result in SearchNDirection<T>(location,
-                l => l.X < 0 ? new Location(Width, l.Y) : new Location((short)(l.X - 1), l.Y), dictionary))
+            var newX = (short)(origin.X - 1);
+            if (newX < 0)
             {
-                yield return result;
+                newX = (short)(Width - 1);
             }
-            foreach (var result in SearchNDirection<T>(location,
-                l => l.X >= Width - 1 ? new Location(0, l.Y) : new Location((short)(l.X + 1), l.Y), dictionary))
+
+            var newLocation = new Location(newX, origin.Y);
+            if (_cells.ContainsKey(newLocation))
             {
-                yield return result;
+                return _cells[newLocation];
             }
-            foreach (var result in SearchNDirection<T>(location,
-                l => l.Y < 0 ? new Location(l.X, Height) : new Location(l.X, (short)(l.Y - 1)), dictionary))
-            {
-                yield return result;
-            }
-            foreach (var result in SearchNDirection<T>(location,
-                l => l.Y >= Height - 1 ? new Location(l.X, 0) : new Location(l.X, (short)(l.Y + 1)), dictionary))
-            {
-                yield return result;
-            }
+
+            return new GridCell(false, newLocation);
         }
 
-        private IEnumerable<T> SearchNDirection<T>(Location location, 
-            Func<Location, Location> next,
-            IDictionary<Location, T> searchCollection
-            )
+        public GridCell East(Location origin)
         {
-            var search = next(location);
-            do
+            var newX = (short)(origin.X + 1);
+            if (newX >= Width)
             {
-                if (!_cells.ContainsKey(search))
-                {
-                    Console.Error.WriteLine($"Tried to search invalid cell {search}");
-                    break;
-                }
+                newX = (short)(0);
+            }
 
-                var cell = _cells[search];
-                if (!cell.Traversable)
-                {
-                    break;
-                }
+            var newLocation = new Location(newX, origin.Y);
+            if (_cells.ContainsKey(newLocation))
+            {
+                return _cells[newLocation];
+            }
 
-                if (searchCollection.ContainsKey(search))
-                {
-                    yield return searchCollection[search];
-                }
+            return new GridCell(false, newLocation);
+    }
+        public GridCell South(Location origin)
+        {
+            var newY = (short)(origin.Y + 1);
+            if (newY >= Height)
+            {
+                newY = (short)(0);
+            }
 
-                if (search.Equals(location))
-                {
-                    // We wrapped around
-                    break;
-                }
+            var newLocation = new Location(origin.X, newY);
+            if (_cells.ContainsKey(newLocation))
+            {
+                return _cells[newLocation];
+            }
 
-                search = next(search);
-            } while (true);
+            return new GridCell(false, newLocation);
+        }
+        public GridCell North(Location origin)
+        {
+            var newY = (short)(origin.Y - 1);
+            if (newY < 0)
+            {
+                newY = (short)(Height - 1);
+            }
+
+            var newLocation = new Location(origin.X, newY);
+            if (_cells.ContainsKey(newLocation))
+            {
+                return _cells[newLocation];
+            }
+
+            return new GridCell(false, newLocation);
+        }
+
+        private IEnumerable<T> VisibleTFrom<T>(Location location, IDictionary<Location, T> dictionary)
+        {
+            Func<Location, GridCell>[] searches =
+            {
+                North,
+                South,
+                East,
+                West,
+            };
+
+            List<Location> visited = new List<Location>();
+
+            foreach (var search in searches)
+            {
+                var next = search(location);
+                while (next.Traversable && !visited.Contains(next.Location))
+                {
+                    visited.Add(next.Location);
+                    if (dictionary.ContainsKey(next.Location))
+                    {
+                        yield return dictionary[next.Location];
+                    }
+
+                    next = search(next.Location);
+                }
+            }
         }
     }
 }
