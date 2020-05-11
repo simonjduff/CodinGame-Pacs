@@ -78,8 +78,6 @@ namespace tests
             Assert.Equal(0, gameGrid.FoodValue(location));
             gameGrid.SetPellets(new []{new Pellet(location, 10)});
             Assert.Equal(10, gameGrid.FoodValue(location));
-            gameGrid.EatFood(location);
-            Assert.Equal(0, gameGrid.FoodValue(location));
         }
     }
 }

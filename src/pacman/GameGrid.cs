@@ -2,11 +2,11 @@
 {
     using System;
     using System.Collections.Generic;
-    using System.Linq;
     public class GameGrid
     {
         private readonly Dictionary<Location, GridCell> _cells = new Dictionary<Location, GridCell>();
-        private Dictionary<Location, Pellet> _pellets = new Dictionary<Location, Pellet>();
+        private Dictionary<Location, Pellet> _visiblePellets = new Dictionary<Location, Pellet>();
+        private Dictionary<Location, Pellet> _bigPellets = new Dictionary<Location, Pellet>();
         public short Width = 0;
         public short Height = 0;
         private Dictionary<Location, Pac> _enemies;
@@ -57,26 +57,43 @@
             }
         }
 
-        public bool InBounds(Location location) => _cells.ContainsKey(location);
-
-        public void EatFood(Location location)
-        {
-            _pellets.Remove(location);
-        }
-
         public short FoodValue(Location location)
         {
-            if (!_pellets.ContainsKey(location))
+            if (!_visiblePellets.ContainsKey(location))
             {
                 return 0;
             }
 
-            return _pellets[location].Value;
+            return _visiblePellets[location].Value;
         }
 
         public void SetPellets(IEnumerable<Pellet> pellets)
         {
-            _pellets = pellets.ToDictionary(k => k.Location);
+            _visiblePellets = new Dictionary<Location, Pellet>();
+            var localBigPellets = _bigPellets;
+            _bigPellets = new Dictionary<Location, Pellet>();
+            foreach (var pellet in pellets)
+            {
+                _visiblePellets.Add(pellet.Location, pellet);
+                var cell = _cells[pellet.Location];
+                cell.MayHavePellet = true;
+                cell.PossiblePelletValue = pellet.Value;
+                if (pellet.Value == 10)
+                {
+                    _bigPellets.Add(pellet.Location, pellet);
+                }
+            }
+
+            foreach (var pellet in localBigPellets)
+            {
+                if (!_bigPellets.ContainsKey(pellet.Key))
+                {
+                    Console.Error.WriteLine($"Big pellet at {pellet.Key} has been eaten!");
+                    var cell = _cells[pellet.Key];
+                    cell.MayHavePellet = false;
+                    cell.PossiblePelletValue = 0;
+                }
+            }
         }
 
         public void SetEnemies(IEnumerable<Pac> enemies)
@@ -109,13 +126,7 @@
             }
         }
 
-        /// <summary>
-        /// This can contain duplicates if the level wraps around.
-        /// Look left, see yourself, look right, see yourself. Double count food.
-        /// </summary>
-        /// <param name="location"></param>
-        /// <returns></returns>
-        public IEnumerable<Pellet> VisiblePelletsFrom(Location location) => VisibleTFrom(location, _pellets);
+        public IEnumerable<Pellet> VisiblePelletsFrom(Location location) => VisibleTFrom(location, _visiblePellets);
         public IEnumerable<Pac> VisibleEnemiesFrom(Location location) => VisibleTFrom(location, _enemies);
 
         public GridCell West(Location origin)
@@ -202,6 +213,14 @@
                 while (next.Traversable && !visited.Contains(next.Location))
                 {
                     visited.Add(next.Location);
+
+                    // Clean up the pellets if none are visible
+                    if (next.MayHavePellet && !_visiblePellets.ContainsKey(next.Location))
+                    {
+                        next.MayHavePellet = false;
+                        next.PossiblePelletValue = 0;
+                    }
+
                     if (dictionary.ContainsKey(next.Location))
                     {
                         yield return dictionary[next.Location];
