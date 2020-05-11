@@ -1,6 +1,7 @@
 ﻿namespace pacman
 {
     using System;
+    using System.Linq;
     using System.Collections.Generic;
     public class GameGrid
     {
@@ -55,6 +56,11 @@
 
                 row++;
             }
+
+            foreach (var cell in _cells)
+            {
+
+            }
         }
 
         public short FoodValue(Location location)
@@ -76,7 +82,6 @@
             {
                 _visiblePellets.Add(pellet.Location, pellet);
                 var cell = _cells[pellet.Location];
-                cell.MayHavePellet = true;
                 cell.PossiblePelletValue = pellet.Value;
                 if (pellet.Value == 10)
                 {
@@ -90,7 +95,6 @@
                 {
                     Console.Error.WriteLine($"Big pellet at {pellet.Key} has been eaten!");
                     var cell = _cells[pellet.Key];
-                    cell.MayHavePellet = false;
                     cell.PossiblePelletValue = 0;
                 }
             }
@@ -126,8 +130,28 @@
             }
         }
 
-        public IEnumerable<Pellet> VisiblePelletsFrom(Location location) => VisibleTFrom(location, _visiblePellets);
-        public IEnumerable<Pac> VisibleEnemiesFrom(Location location) => VisibleTFrom(location, _enemies);
+        public IEnumerable<Pellet> VisiblePelletsFrom(Location location)
+        {
+            return VisibleTFrom(location, _visiblePellets);
+        }
+
+        public void ClearEmptyPelletsVisibleFromLocation(Location location)
+        {
+            var visibleCells = VisibleTFrom<GridCell>(location, _cells);
+            foreach (var cell in visibleCells)
+            {
+                if (!_visiblePellets.ContainsKey(cell.Location))
+                {
+                    cell.PossiblePelletValue = 0;
+                }
+            }
+        }
+
+        public IEnumerable<Pac> VisibleEnemiesFrom(Location location)
+        {
+            _cells[location].PossiblePelletValue = 0;
+            return VisibleTFrom(location, _enemies);
+        }
 
         public GridCell West(Location origin)
         {
@@ -195,6 +219,14 @@
             return new GridCell(false, newLocation);
         }
 
+        public short NeighbourCount(Location origin)
+        {
+            Func<Location, Func<Location, GridCell>, short> t = (c,f) => (short)(f(c).Traversable ? 1 : 0);
+            var edges = new Func<Location,GridCell>[] {North, South, East, West};
+
+            return (short)edges.Sum(e => t(origin, e));
+        }
+
         private IEnumerable<T> VisibleTFrom<T>(Location location, IDictionary<Location, T> dictionary)
         {
             Func<Location, GridCell>[] searches =
@@ -215,9 +247,8 @@
                     visited.Add(next.Location);
 
                     // Clean up the pellets if none are visible
-                    if (next.MayHavePellet && !_visiblePellets.ContainsKey(next.Location))
+                    if (next.PossiblePelletValue > 0 && !_visiblePellets.ContainsKey(next.Location))
                     {
-                        next.MayHavePellet = false;
                         next.PossiblePelletValue = 0;
                     }
 

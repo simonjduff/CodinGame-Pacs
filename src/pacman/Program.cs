@@ -23,8 +23,9 @@
             //var inputOutput = new LoggingConsoleInputOutput();
             var inputOutput = new ConsoleInputOutput();
             //Player player = new Player(inputOutput, new ClosestFoodMovementStrategy());
-            Func<GameGrid, IActionStrategy> strategyFactory = gameGrid => new BiteyCompositeStrategy(
-                new LineOfSightMovementStrategy(gameGrid), new YappyDogStrategy(gameGrid), gameGrid);
+            //Func<GameGrid, IActionStrategy> strategyFactory = gameGrid => new BiteyCompositeStrategy(
+            //    new LineOfSightMovementStrategy(gameGrid), new YappyDogStrategy(gameGrid), gameGrid);
+            Func<GameGrid, IActionStrategy> strategyFactory = gameGrid => new GreedyStrategy(gameGrid);
             Player player = new Player(inputOutput, strategyFactory);
             var cancellation = new CancellationTokenSource();
             player.Run(cancellation.Token);

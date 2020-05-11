@@ -69,6 +69,8 @@
                         pac.AbilityCooldown = abilityCooldown;
                         pac.SpeedTurnsLeft = speedTurnsLeft;
                         pac.Type = typeId;
+                        _gameGrid[pac.Location].PossiblePelletValue = 0;
+                        _gameGrid.VisiblePelletsFrom(pac.Location);
                     }
 
                     var deletion = _pacs.Select(p => p.Key).Where(p => !seenKeys.Contains(p));
