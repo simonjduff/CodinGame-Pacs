@@ -1,4 +1,6 @@
-﻿namespace pacman
+﻿using System;
+
+namespace pacman
 {
     using System.Collections.Generic;
     using System.Threading;
@@ -8,12 +10,12 @@
     public class Player
     {
         private readonly IInputOutput _consoleInputOutput;
-        private readonly IActionStrategy _actionStrategy;
+        private readonly Func<GameGrid, IActionStrategy> _actionStrategyFactory;
 
         public Player(IInputOutput consoleInputOutput,
-            IActionStrategy actionStrategy)
+            Func<GameGrid, IActionStrategy> actionStrategyFactory)
         {
-            _actionStrategy = actionStrategy;
+            _actionStrategyFactory = actionStrategyFactory;
             _consoleInputOutput = consoleInputOutput;
         }
 
@@ -22,7 +24,9 @@
             //var inputOutput = new LoggingConsoleInputOutput();
             var inputOutput = new ConsoleInputOutput();
             //Player player = new Player(inputOutput, new ClosestFoodMovementStrategy());
-            Player player = new Player(inputOutput, new BiteyCompositeStrategy(new LineOfSightMovementStrategy(), new YappyDogStrategy()));
+            Func<GameGrid, IActionStrategy> strategyFactory = gameGrid => new BiteyCompositeStrategy(
+                new LineOfSightMovementStrategy(gameGrid), new YappyDogStrategy(gameGrid), gameGrid);
+            Player player = new Player(inputOutput, strategyFactory);
             var cancellation = new CancellationTokenSource();
             player.Run(cancellation.Token);
         }
@@ -39,10 +43,12 @@
             var grid = new GameGrid();
             grid.StoreGrid(ReadGrid(height));
 
+            var strategy = _actionStrategyFactory(grid);
+
             // game loop
             var loop = new GameLoop(_consoleInputOutput, 
-                cancellation, 
-                _actionStrategy,
+                cancellation,
+                strategy,
                 grid);
             loop.Run();
         }

@@ -7,9 +7,14 @@
     public class LineOfSightMovementStrategy : IPelletsSeenStrategy
     {
         private static readonly Random Random = new Random();
+        private readonly GameGrid _gameGrid;
 
-        public NextAction Next(GameGrid gameGrid, 
-            Pac pac, 
+        public LineOfSightMovementStrategy(GameGrid gameGrid)
+        {
+            _gameGrid = gameGrid;
+        }
+
+        public NextAction Next(Pac pac, 
             CancellationToken cancellation,
             List<Pellet> visiblePellets)
         {
@@ -23,7 +28,7 @@
                     return new MoveAction(pac, pac.LastMoveAction.Location);
                 }
 
-                targetLocation = gameGrid.RandomLocation;
+                targetLocation = _gameGrid.RandomLocation;
                 Console.Error.WriteLine($"Pac {pac.Id} No food. Going to random location {targetLocation}");
             }
             else

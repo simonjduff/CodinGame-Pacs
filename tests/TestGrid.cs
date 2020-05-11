@@ -10,7 +10,7 @@ namespace tests
         private readonly string[] _lines;
         public List<Pellet> Pellets { get; } = new List<Pellet>();
         private readonly FakeInputOutput _inputOutput;
-        private readonly List<Pac> _pacs = new List<Pac>();
+        private readonly List<TestPac> _pacs = new List<TestPac>();
 
         public TestGrid(int width, 
             int height, 
@@ -52,7 +52,7 @@ namespace tests
         public IEnumerable<string> GridLines => _lines.Select(l => new string(l));
         public IEnumerable<string> PelletLines => Pellets.Select(p => $"{p.Location.X} {p.Location.Y} {p.Value}");
 
-        public void AddPac(Pac pac)
+        public void AddPac(TestPac pac)
         {
             _pacs.Add(pac);
         }
@@ -87,5 +87,19 @@ namespace tests
                 _inputOutput.AddInput($"{pac.Id} {(pac.Mine ? 1 : 0)} {pac.Location.X} {pac.Location.Y} NEUTRAL 0 0");
             }
         }
+    }
+
+    public class TestPac
+    {
+        public TestPac(short id, Location location, bool mine)
+        {
+            Id = id;
+            Location = location;
+            Mine = mine;
+        }
+
+        public short Id { get; }
+        public Location Location { get; }
+        public bool Mine { get; }
     }
 }

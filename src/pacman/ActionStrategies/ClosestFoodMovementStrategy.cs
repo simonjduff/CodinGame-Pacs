@@ -5,11 +5,17 @@
     [Obsolete("This isn't useful when food is invisible")]
     public class ClosestFoodMovementStrategy : IActionStrategy
     {
+        private readonly GameGrid _gameGrid;
         private const int MaxRadius = 10;
 
-        public NextAction Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation)
+        public ClosestFoodMovementStrategy(GameGrid gameGrid)
         {
-            if (pac.LastMoveAction != null && gameGrid.FoodValue(pac.LastMoveAction.Location) > 0)
+            _gameGrid = gameGrid;
+        }
+
+        public NextAction Next(Pac pac, CancellationToken cancellation)
+        {
+            if (pac.LastMoveAction != null && _gameGrid.FoodValue(pac.LastMoveAction.Location) > 0)
             {
                 return new NoAction(pac);
             }
@@ -42,12 +48,12 @@
                     searchX++;
                 }
 
-                if (!gameGrid.InBounds(location))
+                if (!_gameGrid.InBounds(location))
                 {
                     continue;
                 }
 
-                if (gameGrid.FoodValue(location) > 0)
+                if (_gameGrid.FoodValue(location) > 0)
                 {
                     Console.Error.WriteLine($"Radius {searchRadius} From {pac.Location} food {location} Mine {pac.Mine}");
 

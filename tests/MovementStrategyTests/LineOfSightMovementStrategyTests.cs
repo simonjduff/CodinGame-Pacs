@@ -11,18 +11,12 @@ namespace tests.MovementStrategyTests
         [Fact]
         public async Task PacMovesToClosestLineOfSight()
         {
-            var pac = new Pac(0, true, new HungryStrategy(new LineOfSightMovementStrategy()), new GiveWayMovementStrategy());
-            pac.AddLocation(new Location(9, 1));
-
-            var enemy = new Pac(1, false, new HungryStrategy(new LineOfSightMovementStrategy()), new GiveWayMovementStrategy());
-            enemy.AddLocation(new Location(25, 11));
-
             await new GameTestHarness()
                 .WithTestGrid(31, 13, mapString)
-                .WithMovementStrategy(new HungryStrategy(new LineOfSightMovementStrategy()))
+                .WithMovementStrategy(g => new HungryStrategy(new LineOfSightMovementStrategy(g), g))
                 //.WithCancellationToken(new CancellationTokenSource(3000).Token)
-                .WithPac(enemy)
-                .WithPac(pac)
+                .WithPac(new TestPac(1, new Location(25,11), false))
+                .WithPac(new TestPac(0, new Location(9,1), true))
                 .RunAsync(out var inputOutput);
 
             Assert.True(inputOutput.CanReadOutput);

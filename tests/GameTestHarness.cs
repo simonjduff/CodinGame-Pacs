@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 using pacman;
@@ -12,8 +13,8 @@ namespace tests
         private string _gridInput;
         private int _gridWidth;
         private int _gridHeight;
-        private readonly List<Pac> _pacs = new List<Pac>();
-        private IActionStrategy _actionStrategy;
+        private readonly List<TestPac> _pacs = new List<TestPac>();
+        private Func<GameGrid, IActionStrategy> _actionStrategy;
 
         public GameTestHarness WithCancellationToken(CancellationToken token)
         {
@@ -29,7 +30,7 @@ namespace tests
             return this;
         }
 
-        public GameTestHarness WithPac(Pac pac)
+        public GameTestHarness WithPac(TestPac pac)
         {
             _pacs.Add(pac);
             return this;
@@ -61,7 +62,7 @@ namespace tests
             return task;
         }
 
-        public GameTestHarness WithMovementStrategy(IActionStrategy actionStrategy)
+        public GameTestHarness WithMovementStrategy(Func<GameGrid, IActionStrategy> actionStrategy)
         {
             _actionStrategy = actionStrategy;
             return this;

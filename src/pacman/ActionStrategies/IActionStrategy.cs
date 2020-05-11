@@ -3,6 +3,6 @@
     using System.Threading;
     public interface IActionStrategy
     {
-        NextAction Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation);
+        NextAction Next(Pac pac, CancellationToken cancellation);
     }
 }

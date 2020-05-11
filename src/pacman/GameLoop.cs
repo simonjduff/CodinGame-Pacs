@@ -60,7 +60,7 @@
                         seenKeys.Add(key);
                         if (!_pacs.ContainsKey(key))
                         {
-                            _pacs.Add(key, new Pac(pacId, mine, _actionStrategy, new GiveWayMovementStrategy()));
+                            _pacs.Add(key, new Pac(pacId, mine, _actionStrategy, new GiveWayMovementStrategy(_gameGrid)));
                         }
 
                         pac = _pacs[key];
@@ -95,7 +95,7 @@
                     foreach (var collision in collisions)
                     {
                         var giveWayer = collision.First().Pac;
-                        nextActions[giveWayer.Key] = giveWayer.GiveWay(_gameGrid, _cancellation);
+                        nextActions[giveWayer.Key] = giveWayer.GiveWay(_cancellation);
                     }
                     
 

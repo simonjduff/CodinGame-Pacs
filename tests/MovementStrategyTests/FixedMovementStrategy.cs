@@ -6,7 +6,7 @@ namespace tests.MovementStrategyTests
 {
     public class FixedMovementStrategy : IActionStrategy
     {
-        public NextAction Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation)
+        public NextAction Next(Pac pac, CancellationToken cancellation)
         {
             return new MoveAction(pac, new Location(15, 10));
         }

@@ -21,12 +21,10 @@ namespace tests
         [Fact]
         public async Task Test1()
         {
-            var pac = new Pac(0, true, new FixedMovementStrategy(), new GiveWayMovementStrategy());
-            pac.AddLocation(new Location(9, 1));
             var harness = new GameTestHarness()
                 .WithTestGrid(31, 13, mapString)
-                .WithPac(pac)
-                .WithMovementStrategy(new FixedMovementStrategy())
+                .WithPac(new TestPac(0, new Location(9, 1), true))
+                .WithMovementStrategy(g => new FixedMovementStrategy())
                 .RunAsync(out FakeInputOutput inputOutput);
 
             await harness;

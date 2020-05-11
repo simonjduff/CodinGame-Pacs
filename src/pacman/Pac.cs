@@ -26,7 +26,7 @@
 
         public NextAction NextAction(GameGrid grid, CancellationToken cancellation)
         {
-            var nextAction = CurrentStrategy.Next(grid, this, cancellation);
+            var nextAction = CurrentStrategy.Next(this, cancellation);
             if (nextAction is MoveAction moveAction)
             {
                 LastMoveAction = moveAction;
@@ -68,8 +68,8 @@
             LocationHistory.Add(location);
         }
 
-        public NextAction GiveWay(GameGrid grid, CancellationToken cancellation) =>
-            _giveWayMovementStrategy.Next(grid, this, cancellation);
+        public NextAction GiveWay(CancellationToken cancellation) =>
+            _giveWayMovementStrategy.Next(this, cancellation);
     }
 
     public struct PacKey

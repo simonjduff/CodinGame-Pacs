@@ -3,6 +3,6 @@
     using System.Threading;
     public interface IEnemiesSeenStrategy
     {
-        NextAction Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation, params Pac[] enemies);
+        NextAction Next(Pac pac, CancellationToken cancellation, params Pac[] enemies);
     }
 }

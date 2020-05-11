@@ -4,8 +4,7 @@
     using System.Threading;
     public interface IPelletsSeenStrategy
     {
-        NextAction Next(GameGrid gameGrid,
-            Pac pac,
+        NextAction Next(Pac pac,
             CancellationToken cancellation,
             List<Pellet> visiblePellets);
     }

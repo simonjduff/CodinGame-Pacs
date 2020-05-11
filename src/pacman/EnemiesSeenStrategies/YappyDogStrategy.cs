@@ -6,7 +6,14 @@
 
     public class YappyDogStrategy : IEnemiesSeenStrategy
     {
-        public NextAction Next(GameGrid gameGrid, Pac pac, CancellationToken cancellation, params Pac[] enemies)
+        private readonly GameGrid _gameGrid;
+
+        public YappyDogStrategy(GameGrid gameGrid)
+        {
+            _gameGrid = gameGrid;
+        }
+
+        public NextAction Next(Pac pac, CancellationToken cancellation, params Pac[] enemies)
         {
             if (!enemies.Any())
             {

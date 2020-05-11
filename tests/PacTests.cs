@@ -10,8 +10,8 @@ namespace tests
         [Fact]
         public void HashCodesDifferOnMine()
         {
-            var left = new Pac(1, true, new FixedMovementStrategy(), new GiveWayMovementStrategy());
-            var right = new Pac(1, false, new FixedMovementStrategy(), new GiveWayMovementStrategy());
+            var left = new Pac(1, true, new FixedMovementStrategy(), new GiveWayMovementStrategy(null));
+            var right = new Pac(1, false, new FixedMovementStrategy(), new GiveWayMovementStrategy(null));
             Assert.NotEqual(left.Key, right.Key);
             Assert.NotEqual(left.GetHashCode(), right.GetHashCode());
         }

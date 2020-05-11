@@ -11,24 +11,14 @@ namespace tests.MovementStrategyTests
         [Fact]
         public async Task PacGoesToClosestFood()
         {
-#pragma warning disable 618
-            var pac = new Pac(0, true, new ClosestFoodMovementStrategy(), new GiveWayMovementStrategy());
-#pragma warning restore 618
-            pac.AddLocation(new Location(9, 1));
-
-#pragma warning disable 618
-            var enemy = new Pac(1, false, new ClosestFoodMovementStrategy(), new GiveWayMovementStrategy());
-#pragma warning restore 618
-            enemy.AddLocation(new Location(25, 11));
-
             Task awaiter = new GameTestHarness()
                 .WithTestGrid(31, 13, mapString)
 #pragma warning disable 618
-                .WithMovementStrategy(new ClosestFoodMovementStrategy())
+                .WithMovementStrategy(g => new ClosestFoodMovementStrategy(g))
 #pragma warning restore 618
                 //.WithCancellationToken(new CancellationTokenSource(3000).Token)
-                .WithPac(enemy)
-                .WithPac(pac)
+                .WithPac(new TestPac(1, new Location(25, 11), false))
+                .WithPac(new TestPac(0, new Location(9, 1), true))
                 .RunAsync(out var inputOutput);
             await awaiter;
             Assert.True(inputOutput.CanReadOutput);
