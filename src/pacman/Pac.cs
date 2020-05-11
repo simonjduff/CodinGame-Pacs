@@ -1,7 +1,7 @@
 ﻿namespace pacman
 {
     using System.Threading;
-    using pacman.ActionStrategies;
+    using ActionStrategies;
     using System.Collections.Generic;
     using System;
     public class Pac : IEquatable<Pac>

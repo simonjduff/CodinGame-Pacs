@@ -1,12 +1,11 @@
-﻿using System;
-
-namespace pacman
+﻿namespace pacman
 {
     using System.Collections.Generic;
     using System.Threading;
     using ActionStrategies;
     using EnemiesSeenStrategies;
     using PelletsSeenStrategies;
+    using System;
     public class Player
     {
         private readonly IInputOutput _consoleInputOutput;
