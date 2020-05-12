@@ -10,6 +10,7 @@
         }
         public short X { get; }
         public short Y { get; }
+        public int GridRow => Y;
 
         public override int GetHashCode()
         {
@@ -43,5 +44,7 @@
         {
             return X == other.X && Y == other.Y;
         }
+
+        public ulong GridMask(int width) => (ulong)Math.Pow(2, width - X - 1);
     }
 }

@@ -69,8 +69,8 @@
                         pac.AbilityCooldown = abilityCooldown;
                         pac.SpeedTurnsLeft = speedTurnsLeft;
                         pac.Type = typeId;
-                        _gameGrid[pac.Location].PossiblePelletValue = 0;
-                        _gameGrid.VisiblePelletsFrom(pac.Location);
+
+                        //_gameGrid.VisiblePelletsFrom(pac.Location);
                     }
 
                     var deletion = _pacs.Select(p => p.Key).Where(p => !seenKeys.Contains(p));
@@ -82,6 +82,8 @@
                     int visiblePelletCount = int.Parse(_inputOutput.ReadLine()); // all pellets in sight
                     _gameGrid.SetPellets(ParsePellets(visiblePelletCount));
                     _gameGrid.SetEnemies(_pacs.Values.Where(p => !p.Mine));
+                    _gameGrid.SetMyPacs(_pacs.Values.Where(p => p.Mine));
+                    Console.Error.WriteLine(_gameGrid.ToString());
 
                     // Write an action using Console.WriteLine()
                     // To debug: Console.Error.WriteLine("Debug messages...");
@@ -120,6 +122,7 @@
                 short x = short.Parse(inputs[0]);
                 short y = short.Parse(inputs[1]);
                 short value = short.Parse(inputs[2]); // amount of points this pellet is worth
+
                 yield return new Pellet(new Location(x, y), value);
             }
         }

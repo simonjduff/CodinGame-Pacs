@@ -67,7 +67,7 @@
                 _randomDestinations.Remove(pac.Key);
             }
 
-            var pathString = string.Join("|", highestValue.Path.Select(p => $"{p} ({_grid[p].PossiblePelletValue})"));
+            var pathString = string.Join("|", highestValue.Path.Select(p => $"{p} ({_grid.FoodValue(p)})"));
             Console.Error.WriteLine($"Pac {pac.Id} Highest value {highestValue.Value} at {highestValue.Location}. Path {pathString}");
 
             //_paths[pac.Key] = new Queue<Location>(10);
@@ -87,15 +87,15 @@
             return new MoveAction(pac, highestValue.Path[2]);
         }
 
-        private void EnqueueIfValid(Queue<Node> queue, GridCell cell, Node start)
+        private void EnqueueIfValid(Queue<Node> queue, Location cell, Node start)
         {
-            if (cell.Traversable && start.Path.Count(p => p == cell.Location) < 2)
+            if (_grid.Traversable(cell) && start.Path.Count(p => p == cell) < 2)
             {
                 var path = start.Path.Append(start.Location).ToList();
 
-                int value = path.Sum(p => start.Path.Contains(cell.Location) ? 0 : _grid[p].PossiblePelletValue);
+                int value = path.Sum(p => start.Path.Contains(cell) ? 0 : _grid.FoodValue(p));
 
-                queue.Enqueue(new Node(cell.Location, path, value));
+                queue.Enqueue(new Node(cell, path, value));
             }
         }
 

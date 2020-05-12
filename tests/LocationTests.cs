@@ -29,5 +29,15 @@ namespace tests
             Assert.Contains(right, locations);
         }
 
+        [Theory]
+        [InlineData(1, 1, 10, 1, 256)]
+        [InlineData(9, 13, 10, 13, 1)]
+        [InlineData(0, 0, 10, 0, 512)]
+        public void LocationReturnsRowAndMask(short x, short y, int width, int expectedRow, ulong expectedMask)
+        {
+            var location = new Location(x, y);
+            Assert.Equal(expectedRow, location.GridRow);
+            Assert.Equal(expectedMask, location.GridMask(width));
+        }
     }
 }
