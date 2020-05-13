@@ -33,6 +33,7 @@
         public static PacType Paper { get; } = new PacType("PAPER");
         public static PacType Scissors { get; } = new PacType("SCISSORS");
         public static PacType Neutral { get; } = new PacType("NEUTRAL");
+        public static PacType Dead { get; } = new PacType("DEAD");
 
         public static PacType ToBeat(PacType type)
         {
@@ -86,6 +87,8 @@
                     return Paper;
                 case "NEUTRAL":
                     return Neutral;
+                case "DEAD":
+                    return Dead;
                 default:
                     throw new ArgumentException($"Unknown pac type {input}", nameof(input));
             }
