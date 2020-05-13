@@ -7,7 +7,7 @@
     public class GreedyStrategy : IActionStrategy
     {
         private readonly GameGrid _grid;
-        //private readonly IDictionary<PacKey,Queue<Location>> _paths = new Dictionary<PacKey, Queue<Location>>();
+
         private readonly IDictionary<PacKey, Location> _randomDestinations = new Dictionary<PacKey, Location>();
 
         public GreedyStrategy(GameGrid grid)
@@ -15,8 +15,11 @@
             _grid = grid;
         }
 
-        public NextAction Next(Pac pac, CancellationToken cancellation)
+        public NextAction Next(Pac pac, CancellationToken receivedCancellation)
         {
+            var innerCancellation = new CancellationTokenSource(10);
+            var cancellation =  CancellationTokenSource.CreateLinkedTokenSource(receivedCancellation, innerCancellation.Token);
+
             if (pac.SpecialActionReady)
             {
                 return new SpeedAction(pac);
@@ -28,21 +31,29 @@
             //}
 
             Queue<Node> queue = new Queue<Node>();
-            var startNode = new Node(pac.Location, Enumerable.Empty<Location>(), 0);
+            var startNode = new Node(pac.Location, new Location[0], 0);
             queue.Enqueue(startNode);
             Node highestValue = startNode;
 
             while (queue.TryDequeue(out Node current))
             {
+                if (cancellation.IsCancellationRequested)
+                {
+                    Console.Error.WriteLine("TIMEOUT CANCELLED");
+                    break;
+                }
+
                 if (current.Value > highestValue.Value)
                 {
                     highestValue = current;
                 }
 
-                if (current.Path.Count > 5)
+                if (current.Path.Length > 7)
                 {
-                    break;
+                    continue;
                 }
+
+                current.Append(current.Location);
 
                 EnqueueIfValid(queue, _grid.North(current.Location), current);
                 EnqueueIfValid(queue, _grid.South(current.Location), current);
@@ -50,15 +61,15 @@
                 EnqueueIfValid(queue, _grid.West(current.Location), current);
             }
 
-            if (highestValue.Path.Count == 0)
+            if (highestValue.Path.Length < 2)
             {
                 Console.Error.WriteLine($"{pac.Id} No movement found");
 
                 if (!_randomDestinations.ContainsKey(pac.Key) || _randomDestinations[pac.Key] == pac.Location)
-                {   
+                {
                     _randomDestinations[pac.Key] = _grid.RandomLocation;
                 }
-                
+
                 return new MoveAction(pac, _randomDestinations[pac.Key]);
             }
 
@@ -68,7 +79,7 @@
             }
 
             var pathString = string.Join("|", highestValue.Path.Select(p => $"{p} ({_grid.FoodValue(p)})"));
-            Console.Error.WriteLine($"Pac {pac.Id} Highest value {highestValue.Value} at {highestValue.Location}. Path {pathString}");
+            Console.Error.WriteLine($"Pac {pac.Id} at {pac.Location} Highest value {highestValue.Value} at {highestValue.Location}. Path {pathString}");
 
             //_paths[pac.Key] = new Queue<Location>(10);
             //foreach (var item in highestValue.Path.Skip(1).Take(10))
@@ -78,9 +89,14 @@
 
             //return new MoveAction(pac, _paths[pac.Key].Dequeue());
 
-            var neighbours = _grid.NeighbourCount(highestValue.Path[1]);
-            if (neighbours == 1)
+            if (highestValue.Path.Length == 2)
             {
+                return new MoveAction(pac, highestValue.Path[1]);
+            }
+
+            if (highestValue.Path[2] == highestValue.Path[0])
+            {
+                Console.Error.WriteLine($"Pac {pac.Id}. Backtracking 1, moving 1 space only");
                 return new MoveAction(pac, highestValue.Path[1]);
             }
 
@@ -89,29 +105,43 @@
 
         private void EnqueueIfValid(Queue<Node> queue, Location cell, Node start)
         {
-            if (_grid.Traversable(cell) && start.Path.Count(p => p == cell) < 2)
+            // Ignore the cell we're currently standing on
+            var traversable = cell == start.Path[0] || _grid.Traversable(cell);
+
+            if (traversable && start.Path.Count(p => p == cell) <= 2)
             {
-                var path = start.Path.Append(start.Location).ToList();
+                int value = start.Path.Sum(p => start.Path.Contains(cell) ? 0 : _grid.FoodValue(p));
 
-                int value = path.Sum(p => start.Path.Contains(cell) ? 0 : _grid.FoodValue(p));
-
-                queue.Enqueue(new Node(cell, path, value));
+                queue.Enqueue(new Node(cell, start.Path, value));
             }
         }
 
         public class Node
         {
             public Node(Location location, 
-                IEnumerable<Location> path,
+                Location[] path,
                 int value)
             {
                 Location = location;
-                Path = path.ToList();
+                Path = path;
                 Value = value;
             }
             public Location Location { get; }
-            public List<Location> Path { get; }
+            public Location[] Path { get; private set; }
             public int Value { get; }
+
+            public void Append(Location location)
+            {
+                var old = Path;
+                Path = new Location[Path.Length + 1];
+                old.CopyTo(Path, 0);
+                Path[^1] = location;
+            }
+
+            public override string ToString()
+            {
+                return string.Join("|", Path);
+            }
         }
     }
 }

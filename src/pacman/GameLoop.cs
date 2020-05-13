@@ -83,7 +83,7 @@
                     _gameGrid.SetPellets(ParsePellets(visiblePelletCount));
                     _gameGrid.SetEnemies(_pacs.Values.Where(p => !p.Mine));
                     _gameGrid.SetMyPacs(_pacs.Values.Where(p => p.Mine));
-                    Console.Error.WriteLine(_gameGrid.ToString());
+                    //Console.Error.WriteLine(_gameGrid.ToString());
 
                     // Write an action using Console.WriteLine()
                     // To debug: Console.Error.WriteLine("Debug messages...");

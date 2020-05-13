@@ -47,7 +47,6 @@
             get => _pacType;
             set
             {
-                Console.Error.WriteLine($"{(Mine ? "My" : "Enemy")} pac {Id} has been told it is {value}");
                 _pacType = value;
             }
         }

@@ -131,6 +131,7 @@
         public void SetPellets(IEnumerable<Pellet> pellets)
         {
             _visibleSmallPellets = new ulong[Height];
+            _bigPellets = new ulong[Height];
             foreach (var pellet in pellets)
             {
                 var row = pellet.Location.GridRow;
@@ -231,7 +232,7 @@
             foreach (var direction in directions)
             {
                 var newLocation = direction(location);
-                while (Traversable(newLocation))
+                while (Traversable(newLocation, true))
                 {
                     sightMask[newLocation.GridRow] = newLocation.GridMask(Width) | sightMask[newLocation.GridRow];
                     newLocation = direction(newLocation);
@@ -306,11 +307,11 @@
 
         public short NeighbourCount(Location origin)
         {
-            short Func(Location c, Func<Location, Location> f) => (short) (Traversable(f(c)) ? 1 : 0);
+            short NeighbourIsTraversable(Location c, Func<Location, Location> f) => (short) (Traversable(f(c), true) ? 1 : 0);
 
             var edges = new Func<Location, Location>[] { North, South, East, West };
 
-            return (short)edges.Sum(e => Func(origin, e));
+            return (short)edges.Sum(e => NeighbourIsTraversable(origin, e));
         }
 
         private IEnumerable<T> VisibleTFrom<T>(Location location, IDictionary<Location, T> dictionary)
@@ -350,8 +351,15 @@
             //}
         }
 
-        public bool Traversable(Location location)
-            => (_grid[location.GridRow] & location.GridMask(Width)) == location.GridMask(Width);
+        public bool Traversable(Location location, bool lookThroughPacs = false)
+        {
+            if (!lookThroughPacs & (_myPacs.ContainsKey(location) || _enemies.ContainsKey(location)))
+            {
+                return false;
+            }
+
+            return (_grid[location.GridRow] & location.GridMask(Width)) == location.GridMask(Width);
+        }
 
         public void ClearPossiblePelletAt(Location pacLocation)
         {
